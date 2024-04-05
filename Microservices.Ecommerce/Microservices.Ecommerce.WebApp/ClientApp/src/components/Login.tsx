@@ -5,7 +5,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
-import { useHistory } from 'react-router';
 import { ApplicationState } from '../store';
 import * as AuthStore from '../store/Auth';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
@@ -19,7 +18,6 @@ type LoginProps =
     RouteComponentProps<{}>;
 
 const Login: React.FC<LoginProps> = (props) => {
-    const history = useHistory();
     const validationSchema = Yup.object().shape({
         username: Yup.string()
             .required('Username is required'),
@@ -33,12 +31,12 @@ const Login: React.FC<LoginProps> = (props) => {
                 <Formik
                     initialValues={{ username: '', password: '' }}
                     validationSchema={validationSchema}
-                    onSubmit={async (values, { setSubmitting }) => {
-                         await props.login({
+                    onSubmit={(values, { setSubmitting }) => {
+                        props.login({
                             email: values.username,
                             password: values.password
                         });
-                        // history.push('/');
+
                         setSubmitting(false);
                     }}
                 >
