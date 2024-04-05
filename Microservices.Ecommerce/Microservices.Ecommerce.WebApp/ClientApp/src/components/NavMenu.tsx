@@ -9,7 +9,7 @@ import './NavMenu.css';
 const NavMenu = () => {
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
-    const isLoggingIn = useSelector((state: ApplicationState) => state.authentication?.isLoggingIn);
+    const isLoggingIn = useSelector((state: ApplicationState) => state.authentication && state.authentication.isLoggingIn);
     const toggle = () => {
         setIsOpen(!isOpen);
     };

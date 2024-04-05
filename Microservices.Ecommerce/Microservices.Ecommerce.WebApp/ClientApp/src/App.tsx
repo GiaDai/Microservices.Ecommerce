@@ -12,7 +12,7 @@ import { ApplicationState } from './store';
 import './custom.css'
 
 const App = () => {
-    const isLoggingIn = useSelector((state: ApplicationState) => state.authentication?.isLoggingIn); // replace 'auth' with the name of your auth reducer
+    const isLoggingIn = useSelector((state: ApplicationState) => state.authentication && state.authentication.isLoggingIn); // replace 'auth' with the name of your auth reducer
 
     return (
         <Layout>
