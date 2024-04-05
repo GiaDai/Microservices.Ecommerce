@@ -1,10 +1,10 @@
 // fetch method post to call the /api/account/authenticate endpoint
 // payload is interface AuthLoginRequest
 // response is interface AuthLoginResponse
-
+import { ApiResponse } from '../types/ResponseType';
 import { AuthLoginResponse, AuthLoginRequest } from '../types/AuthType';
 
-export const accountAuthenticateApi = async (payload: AuthLoginRequest): Promise<AuthLoginResponse> => {
+export const accountAuthenticateApi = async (payload: AuthLoginRequest): Promise<ApiResponse<AuthLoginResponse>> => {
     const response = await fetch('/api/account/authenticate', {
         method: 'POST',
         headers: {

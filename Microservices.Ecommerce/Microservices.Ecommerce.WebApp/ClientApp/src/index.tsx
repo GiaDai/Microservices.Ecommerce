@@ -6,7 +6,10 @@ import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
 import configureStore from './store/configureStore';
+import ToastWrapper from './wrapper/ToastWrapper';
 import App from './App';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import registerServiceWorker from './registerServiceWorker';
 
 // Create browser history to use in the Redux store
@@ -19,7 +22,10 @@ const store = configureStore(history);
 ReactDOM.render(
     <Provider store={store}>
         <ConnectedRouter history={history}>
-            <App />
+            <ToastContainer />
+            <ToastWrapper>
+                <App /> 
+            </ToastWrapper>
         </ConnectedRouter>
     </Provider>,
     document.getElementById('root'));

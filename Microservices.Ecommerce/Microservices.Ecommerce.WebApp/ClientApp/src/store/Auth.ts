@@ -1,6 +1,8 @@
 import { Action, Reducer } from 'redux';
 import { AuthLoginResponse, AuthLoginRequest } from '../types/AuthType';
 import { accountAuthenticateApi } from '../apis/AuthApi';
+import { actionCreators as toastActionCreators } from './Toast';
+
 // STATE - This defines the type of data maintained in the Redux store.
 // export interface AuthState {
 //     id: string;
@@ -33,9 +35,21 @@ export type AuthAction = UpdateUserInfoAction | LoginAction | LogoutAction;
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 export const authActionCreators = {
     updateUserInfo: (userInfo: AuthLoginResponse) => ({ type: 'UPDATE_USER_INFO', userInfo } as UpdateUserInfoAction),
-    login: async (request: AuthLoginRequest): Promise<LoginAction | AuthLoginResponse> => {
-        const response = await accountAuthenticateApi(request);
-        return { type: 'LOGIN', userInfo: response } as LoginAction | AuthLoginResponse;
+    login: (request: AuthLoginRequest) => async (dispatch: any): Promise<LoginAction | AuthLoginResponse> => {
+        try {
+            const response = await accountAuthenticateApi(request);
+            dispatch(toastActionCreators.showToast({ message: response.message || '', type: 'success' }));
+            const userInfo = { ...response.data, isLoggingIn: true };
+            dispatch({ type: 'LOGIN', userInfo } as LoginAction | AuthLoginResponse);
+            return response.data; // Return the response
+        }
+        catch (error) {
+            dispatch(toastActionCreators.showToast({ message: 'Failed to authenticate', type: 'error' }));
+            const emptyUserInfo = { id: '', userName: '', email: '', roles: [], isVerified: false, jwToken: '', isLoggingIn: false };
+            dispatch({ type: 'LOGIN', userInfo: emptyUserInfo } as LoginAction | AuthLoginResponse);
+            
+            return emptyUserInfo; // Return the empty user info
+        }
     },
     logout: () => ({ type: 'LOGOUT' } as LogoutAction),
 };
@@ -58,7 +72,7 @@ export const reducer: Reducer<AuthLoginResponse> = (state: AuthLoginResponse | u
         case 'UPDATE_USER_INFO':
             return { ...state, ...((action as UpdateUserInfoAction).userInfo) };
         case 'LOGIN':
-            const newState = { ...state, ...((action as LoginAction).userInfo), isLoggingIn: true };
+            const newState = { ...state, ...((action as LoginAction).userInfo)};
             localStorage.setItem('authState', JSON.stringify(newState));
             return newState;
         case 'LOGOUT':
