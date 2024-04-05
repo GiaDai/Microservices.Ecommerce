@@ -1,27 +1,35 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.34601.136
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{1EE8FAA2-3280-4E42-A495-BC1D2B4B9FD7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApi", "WebApi", "{EE10D21E-5FA1-496D-8F3A-57CA549DE80B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservices.Ecommerce.WebApi", "Microservices.Ecommerce\Microservices.Ecommerce.WebApi\Microservices.Ecommerce.WebApi.csproj", "{68F00803-64D1-492D-BE22-0D7454BA12E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservices.Ecommerce.WebApi", "Microservices.Ecommerce\Microservices.Ecommerce.WebApi\Microservices.Ecommerce.WebApi.csproj", "{68F00803-64D1-492D-BE22-0D7454BA12E6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{442DBBCD-FEA1-4322-A766-D2E8DAE43860}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservices.Ecommerce.Application", "Microservices.Ecommerce\Microservices.Ecommerce.Application\Microservices.Ecommerce.Application.csproj", "{27D62532-475F-4D2E-8F37-5CF82EC72194}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservices.Ecommerce.Application", "Microservices.Ecommerce\Microservices.Ecommerce.Application\Microservices.Ecommerce.Application.csproj", "{27D62532-475F-4D2E-8F37-5CF82EC72194}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservices.Ecommerce.Domain", "Microservices.Ecommerce\Microservices.Ecommerce.Domain\Microservices.Ecommerce.Domain.csproj", "{D5755A43-F965-41A1-A6E9-0D1F4C3F5E40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservices.Ecommerce.Domain", "Microservices.Ecommerce\Microservices.Ecommerce.Domain\Microservices.Ecommerce.Domain.csproj", "{D5755A43-F965-41A1-A6E9-0D1F4C3F5E40}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{6F6A7F49-876E-4393-ABE7-C35216EB1141}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservices.Ecommerce.Infrastructure.Identity", "Microservices.Ecommerce\Microservices.Ecommerce.Infrastructure.Identity\Microservices.Ecommerce.Infrastructure.Identity.csproj", "{AD4DA6EA-FB40-410C-B29F-4DCE5B8ED14F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservices.Ecommerce.Infrastructure.Identity", "Microservices.Ecommerce\Microservices.Ecommerce.Infrastructure.Identity\Microservices.Ecommerce.Infrastructure.Identity.csproj", "{AD4DA6EA-FB40-410C-B29F-4DCE5B8ED14F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservices.Ecommerce.Infrastructure.Persistence", "Microservices.Ecommerce\Microservices.Ecommerce.Infrastructure.Persistence\Microservices.Ecommerce.Infrastructure.Persistence.csproj", "{CE8DD6B8-FE28-4CCE-9F5E-195F5AA0E606}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservices.Ecommerce.Infrastructure.Persistence", "Microservices.Ecommerce\Microservices.Ecommerce.Infrastructure.Persistence\Microservices.Ecommerce.Infrastructure.Persistence.csproj", "{CE8DD6B8-FE28-4CCE-9F5E-195F5AA0E606}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservices.Ecommerce.Infrastructure.Shared", "Microservices.Ecommerce\Microservices.Ecommerce.Infrastructure.Shared\Microservices.Ecommerce.Infrastructure.Shared.csproj", "{B5FE1080-1A66-4E02-9B04-85ED30BAC887}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservices.Ecommerce.Infrastructure.Shared", "Microservices.Ecommerce\Microservices.Ecommerce.Infrastructure.Shared\Microservices.Ecommerce.Infrastructure.Shared.csproj", "{B5FE1080-1A66-4E02-9B04-85ED30BAC887}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApp", "WebApp", "{A81983F9-EB63-463F-BECF-EDF38C591DB6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservices.Ecommerce.WebApp", "Microservices.Ecommerce\Microservices.Ecommerce.WebApp\Microservices.Ecommerce.WebApp.csproj", "{E19CF517-3036-47DB-9FD4-B25E79F0A695}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Console", "Console", "{20997C1E-E314-4F53-B51C-253DD3D847F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservices.Ecommerce.Console", "Microservices.Ecommerce\Microservices.Ecommerce.Console\Microservices.Ecommerce.Console.csproj", "{DACECA70-3785-4E0F-87B7-2338194F9EEF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +61,14 @@ Global
 		{B5FE1080-1A66-4E02-9B04-85ED30BAC887}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5FE1080-1A66-4E02-9B04-85ED30BAC887}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5FE1080-1A66-4E02-9B04-85ED30BAC887}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E19CF517-3036-47DB-9FD4-B25E79F0A695}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E19CF517-3036-47DB-9FD4-B25E79F0A695}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E19CF517-3036-47DB-9FD4-B25E79F0A695}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E19CF517-3036-47DB-9FD4-B25E79F0A695}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DACECA70-3785-4E0F-87B7-2338194F9EEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DACECA70-3785-4E0F-87B7-2338194F9EEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DACECA70-3785-4E0F-87B7-2338194F9EEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DACECA70-3785-4E0F-87B7-2338194F9EEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +83,10 @@ Global
 		{AD4DA6EA-FB40-410C-B29F-4DCE5B8ED14F} = {6F6A7F49-876E-4393-ABE7-C35216EB1141}
 		{CE8DD6B8-FE28-4CCE-9F5E-195F5AA0E606} = {6F6A7F49-876E-4393-ABE7-C35216EB1141}
 		{B5FE1080-1A66-4E02-9B04-85ED30BAC887} = {6F6A7F49-876E-4393-ABE7-C35216EB1141}
+		{A81983F9-EB63-463F-BECF-EDF38C591DB6} = {1EE8FAA2-3280-4E42-A495-BC1D2B4B9FD7}
+		{E19CF517-3036-47DB-9FD4-B25E79F0A695} = {A81983F9-EB63-463F-BECF-EDF38C591DB6}
+		{20997C1E-E314-4F53-B51C-253DD3D847F7} = {1EE8FAA2-3280-4E42-A495-BC1D2B4B9FD7}
+		{DACECA70-3785-4E0F-87B7-2338194F9EEF} = {20997C1E-E314-4F53-B51C-253DD3D847F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A2220EBF-09CA-4C51-88CF-576208450A0E}
