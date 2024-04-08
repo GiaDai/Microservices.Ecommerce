@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
-import './App.css';
+import Navbar from './components/Navbar';
+import ChatRoom from './pages/ChatRoom';
+import Login from './pages/Login';
+import PrivateRoute from './routes/PrivateRoute';
+import { AuthProvider } from './context/AuthContext';
+import { Route, Routes } from 'react-router-dom';
 
 interface Forecast {
     date: string;
@@ -8,7 +13,7 @@ interface Forecast {
     summary: string;
 }
 
-function App() {
+const App = () => {
     const [forecasts, setForecasts] = useState<Forecast[]>();
 
     useEffect(() => {
@@ -16,19 +21,19 @@ function App() {
     }, []);
 
     const contents = forecasts === undefined
-        ? <p><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationreact">https://aka.ms/jspsintegrationreact</a> for more details.</em></p>
-        : <table className="table table-striped" aria-labelledby="tabelLabel">
+        ? <p className="italic"><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationreact" className="underline text-blue-500">https://aka.ms/jspsintegrationreact</a> for more details.</em></p>
+        : <table className="table-auto border-collapse border border-green-800">
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Temp. (C)</th>
-                    <th>Temp. (F)</th>
-                    <th>Summary</th>
+                    <th className="border border-green-600">Date</th>
+                    <th className="border border-green-600">Temp. (C)</th>
+                    <th className="border border-green-600">Temp. (F)</th>
+                    <th className="border border-green-600">Summary</th>
                 </tr>
             </thead>
             <tbody>
                 {forecasts.map(forecast =>
-                    <tr key={forecast.date}>
+                    <tr key={forecast.date} className="border border-green-600">
                         <td>{forecast.date}</td>
                         <td>{forecast.temperatureC}</td>
                         <td>{forecast.temperatureF}</td>
@@ -38,19 +43,25 @@ function App() {
             </tbody>
         </table>;
 
-    return (
-        <div>
-            <h1 id="tabelLabel">Weather forecast</h1>
-            <p>This component demonstrates fetching data from the server.</p>
-            {contents}
-        </div>
-    );
-
-    async function populateWeatherData() {
+    const populateWeatherData = async () => {
         const response = await fetch('weatherforecast');
         const data = await response.json();
         setForecasts(data);
     }
+
+    return (
+        <AuthProvider>
+            <Navbar />
+            <Routes>
+                <Route path="/" element={<Login/>} />
+                <Route path="/chat" element={
+                    <PrivateRoute>
+                    <ChatRoom />
+                    </PrivateRoute>
+                } />
+            </Routes>
+        </AuthProvider>
+    );
 }
 
 export default App;
