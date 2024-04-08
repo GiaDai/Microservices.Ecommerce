@@ -17,6 +17,8 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using System;
+using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Microservices.Ecommerce.Infrastructure.Identity
@@ -106,8 +108,25 @@ namespace Microservices.Ecommerce.Infrastructure.Identity
             }
         }
 
-        public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+        public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration _config)
         {
+            string privateKeyPath = _config["JWTSettings:PrivatekeyPath"];
+            RsaSecurityKey rsaSecurityKey = null;
+            TokenValidationParameters tokenValidationParameters = null;
+            if (File.Exists(privateKeyPath))
+            {
+                var rsaKey = RSA.Create();
+                string xmlKey = File.ReadAllText(privateKeyPath);
+                rsaKey.FromXmlString(xmlKey);
+                rsaSecurityKey = new RsaSecurityKey(rsaKey);
+                tokenValidationParameters = GetTokenValidationParameters(_config, rsaSecurityKey);
+            }
+            else
+            {
+                var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWTSettings:Key"]));
+                tokenValidationParameters = GetTokenValidationParameters(_config, symmetricSecurityKey);
+            }
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -117,17 +136,7 @@ namespace Microservices.Ecommerce.Infrastructure.Identity
             {
                 o.RequireHttpsMetadata = false;
                 o.SaveToken = false;
-                o.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidIssuer = configuration["JWTSettings:Issuer"],
-                    ValidAudience = configuration["JWTSettings:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWTSettings:Key"]))
-                };
+                o.TokenValidationParameters = tokenValidationParameters;
                 o.Events = new JwtBearerEvents()
                 {
                     OnAuthenticationFailed = c =>
@@ -154,6 +163,21 @@ namespace Microservices.Ecommerce.Infrastructure.Identity
                     },
                 };
             });
+        }
+
+        private static TokenValidationParameters GetTokenValidationParameters(IConfiguration _config, SecurityKey securityKey)
+        {
+            return new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
+                ValidIssuer = _config["JWTSettings:Issuer"],
+                ValidAudience = _config["JWTSettings:Audience"],
+                IssuerSigningKey = securityKey
+            };
         }
     }
 }

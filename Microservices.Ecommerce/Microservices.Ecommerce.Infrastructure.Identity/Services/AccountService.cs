@@ -17,6 +17,7 @@ using Org.BouncyCastle.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Net.Cache;
 using System.Security.Claims;
@@ -120,16 +121,16 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Services
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
-
+        
             var roleClaims = new List<Claim>();
-
+        
             for (int i = 0; i < roles.Count; i++)
             {
                 roleClaims.Add(new Claim("roles", roles[i]));
             }
-
+        
             string ipAddress = IpHelper.GetIpAddress();
-
+        
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
@@ -140,17 +141,41 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Services
             }
             .Union(userClaims)
             .Union(roleClaims);
-
-            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
-            var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
-
-            var jwtSecurityToken = new JwtSecurityToken(
+        
+            SigningCredentials signingCredentials;
+            if (File.Exists(_jwtSettings.PrivatekeyPath))
+            {
+                RsaSecurityKey rsaSecurityKey = GenerateRsaKey();
+                signingCredentials = new SigningCredentials(rsaSecurityKey, SecurityAlgorithms.RsaSha256);
+                Console.WriteLine(signingCredentials.ToString());
+            }
+            else
+            {
+                var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
+                signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+            }
+        
+            return GenerateJwtSecurityToken(claims, signingCredentials);
+        }
+        
+        private JwtSecurityToken GenerateJwtSecurityToken(IEnumerable<Claim> claims, SigningCredentials signingCredentials)
+        {
+            return new JwtSecurityToken(
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes),
                 signingCredentials: signingCredentials);
-            return jwtSecurityToken;
+        }
+
+        private RsaSecurityKey GenerateRsaKey()
+        {
+            var rsaKey = RSA.Create();
+            string xmlKey = File.ReadAllText(_jwtSettings.PrivatekeyPath);
+            rsaKey.FromXmlString(xmlKey);
+            var rsaSecurityKey = new RsaSecurityKey(rsaKey);
+           
+            return rsaSecurityKey;
         }
 
         private string RandomTokenString()

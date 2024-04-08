@@ -1,21 +1,17 @@
-﻿using Microservices.Ecommerce.Application.Features.Products.Commands;
-using Microservices.Ecommerce.Application.Features.Products.Commands.CreateProduct;
+﻿using Microservices.Ecommerce.Application.Features.Products.Commands.CreateProduct;
 using Microservices.Ecommerce.Application.Features.Products.Commands.DeleteProductById;
 using Microservices.Ecommerce.Application.Features.Products.Commands.UpdateProduct;
 using Microservices.Ecommerce.Application.Features.Products.Queries.GetAllProducts;
 using Microservices.Ecommerce.Application.Features.Products.Queries.GetProductById;
-using Microservices.Ecommerce.Application.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Microservices.Ecommerce.WebApi.Controllers.v1
 {
+    [Authorize]
     [ApiVersion("1.0")]
     public class ProductController : BaseApiController
     {
@@ -36,7 +32,6 @@ namespace Microservices.Ecommerce.WebApi.Controllers.v1
 
         // POST api/<controller>
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> Post(CreateProductCommand command)
         {
             return Ok(await Mediator.Send(command));
@@ -44,7 +39,6 @@ namespace Microservices.Ecommerce.WebApi.Controllers.v1
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        [Authorize]
         public async Task<IActionResult> Put(int id, UpdateProductCommand command)
         {
             if (id != command.Id)
@@ -56,7 +50,6 @@ namespace Microservices.Ecommerce.WebApi.Controllers.v1
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             return Ok(await Mediator.Send(new DeleteProductByIdCommand { Id = id }));

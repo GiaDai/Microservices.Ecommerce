@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microservices.Ecommerce.Domain.Settings
+﻿namespace Microservices.Ecommerce.Domain.Settings
 {
     public class JWTSettings
     {
@@ -10,5 +6,6 @@ namespace Microservices.Ecommerce.Domain.Settings
         public string Issuer { get; set; }
         public string Audience { get; set; }
         public double DurationInMinutes { get; set; }
+        public string PrivatekeyPath { get; set; }
     }
 }

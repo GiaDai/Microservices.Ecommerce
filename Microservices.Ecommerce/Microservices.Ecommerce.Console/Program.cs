@@ -1,7 +1,23 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
 using System.Text;
 
-Console.WriteLine("Hello, World!");
-var signinKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("RVhDR0NJNEJRYkw3Vm9wd0Z5Xzg6VUJETUw4Z0lUc3ltV05xVjd0MUJWdw=="));
-Console.WriteLine(signinKey.);
+string keyDirectorypath = Path.Combine(Directory.GetCurrentDirectory(), "keys");
+
+if (!Directory.Exists(keyDirectorypath))
+{
+    Directory.CreateDirectory(keyDirectorypath);
+}
+
+var rsa = RSA.Create(2048);
+
+string privateKey = rsa.ToXmlString(true);
+string publicKey = rsa.ToXmlString(false);
+
+using var privateKeyFile = File.Create(Path.Combine(keyDirectorypath, "private.xml"));
+privateKeyFile.Write( Encoding.UTF8.GetBytes(privateKey));
+privateKeyFile.Close();
+
+using var publicKeyFile = File.Create(Path.Combine(keyDirectorypath, "public.xml"));
+publicKeyFile.Write(Encoding.UTF8.GetBytes(publicKey));
+publicKeyFile.Close();

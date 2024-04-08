@@ -4,6 +4,7 @@ using Microservices.Ecommerce.Infrastructure.Identity;
 using Microservices.Ecommerce.Infrastructure.Persistence;
 using Microservices.Ecommerce.Infrastructure.Shared;
 using Microservices.Ecommerce.WebApi.Extensions;
+using Microservices.Ecommerce.WebApi.Middlewares;
 using Microservices.Ecommerce.WebApi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -55,6 +56,7 @@ namespace Microservices.Ecommerce.WebApi
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSwaggerExtension();
+            app.UseMiddleware<AntiXssMiddleware>();
             app.UseErrorHandlingMiddleware();
             app.UseHealthChecks("/health");
 
