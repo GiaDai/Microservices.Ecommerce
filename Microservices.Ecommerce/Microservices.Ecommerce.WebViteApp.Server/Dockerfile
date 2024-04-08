@@ -4,23 +4,25 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 8081
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Production
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS with-node
-RUN apt-get update
-RUN apt-get install curl
-RUN curl -sL https://deb.nodesource.com/setup_20.x | bash
-RUN apt-get -y install nodejs
-
-
-FROM with-node AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Microservices.Ecommerce.WebViteApp.Server/Microservices.Ecommerce.WebViteApp.Server.csproj", "Microservices.Ecommerce.WebViteApp.Server/"]
-COPY ["microservices.ecommerce.webviteapp.client/microservices.ecommerce.webviteapp.client.esproj", "microservices.ecommerce.webviteapp.client/"]
-RUN dotnet restore "./Microservices.Ecommerce.WebViteApp.Server/Microservices.Ecommerce.WebViteApp.Server.csproj"
+COPY ["Microservices.Ecommerce/microservices.ecommerce.webviteapp.client/nuget.config", "Microservices.Ecommerce/microservices.ecommerce.webviteapp.client/"]
+COPY ["Microservices.Ecommerce/Microservices.Ecommerce.WebViteApp.Server/Microservices.Ecommerce.WebViteApp.Server.csproj", "Microservices.Ecommerce/Microservices.Ecommerce.WebViteApp.Server/"]
+COPY ["Microservices.Ecommerce/Microservices.Ecommerce.Infrastructure.Identity/Microservices.Ecommerce.Infrastructure.Identity.csproj", "Microservices.Ecommerce/Microservices.Ecommerce.Infrastructure.Identity/"]
+COPY ["Microservices.Ecommerce/Microservices.Ecommerce.Infrastructure.Shared/Microservices.Ecommerce.Infrastructure.Shared.csproj", "Microservices.Ecommerce/Microservices.Ecommerce.Infrastructure.Shared/"]
+COPY ["Microservices.Ecommerce/Microservices.Ecommerce.Application/Microservices.Ecommerce.Application.csproj", "Microservices.Ecommerce/Microservices.Ecommerce.Application/"]
+COPY ["Microservices.Ecommerce/Microservices.Ecommerce.Domain/Microservices.Ecommerce.Domain.csproj", "Microservices.Ecommerce/Microservices.Ecommerce.Domain/"]
+COPY ["Microservices.Ecommerce/Microservices.Ecommerce.Infrastructure.Persistence/Microservices.Ecommerce.Infrastructure.Persistence.csproj", "Microservices.Ecommerce/Microservices.Ecommerce.Infrastructure.Persistence/"]
+COPY ["Microservices.Ecommerce/microservices.ecommerce.webviteapp.client/microservices.ecommerce.webviteapp.client.esproj", "Microservices.Ecommerce/microservices.ecommerce.webviteapp.client/"]
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt install -y nodejs
+RUN dotnet restore "./Microservices.Ecommerce/Microservices.Ecommerce.WebViteApp.Server/./Microservices.Ecommerce.WebViteApp.Server.csproj"
 COPY . .
-WORKDIR "/src/Microservices.Ecommerce.WebViteApp.Server"
+WORKDIR "/src/Microservices.Ecommerce/Microservices.Ecommerce.WebViteApp.Server"
 RUN dotnet build "./Microservices.Ecommerce.WebViteApp.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
