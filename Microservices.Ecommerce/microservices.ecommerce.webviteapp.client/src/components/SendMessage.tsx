@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 const SendMessage = () => {
     const [message, setMessage] = useState('');
 
-    const handleMessageSubmit = (e) => {
+    const handleMessageSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         console.log(message);
         setMessage('');

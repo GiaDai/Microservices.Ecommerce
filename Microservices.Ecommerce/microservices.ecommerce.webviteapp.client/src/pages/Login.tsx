@@ -1,7 +1,4 @@
-import React from 'react'
-import { UserAuth } from '../context/AuthContext'
 const Login = () => {
-  const { currentUser, setCurrentUser } = UserAuth();
   return (
     <div className="hero min-h-screen bg-base-200">
       <div className="hero-content flex-col lg:flex-row-reverse">
