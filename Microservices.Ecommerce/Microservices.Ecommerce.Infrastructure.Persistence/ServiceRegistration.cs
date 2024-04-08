@@ -75,6 +75,7 @@ namespace Microservices.Ecommerce.Infrastructure.Persistence
             {
                 var _dbSetting = scope.ServiceProvider.GetRequiredService<IDatabaseSettingsProvider>();
                 string appConnStr = _dbSetting.GetPostgresConnectionString();
+                Console.WriteLine("Postgres Connection String: " + appConnStr);
                 if (!string.IsNullOrWhiteSpace(appConnStr))
                 {
                     services.AddDbContext<ApplicationDbContext>(options =>
@@ -82,7 +83,7 @@ namespace Microservices.Ecommerce.Infrastructure.Persistence
                     appConnStr,
                     b =>
                     {
-                        b.MigrationsAssembly(isProduction ? typeof(ApplicationDbContext).Assembly.FullName : "Microservices.Ecommerce.WebApi");
+                        b.MigrationsAssembly(isProduction ? typeof(ApplicationDbContext).Assembly.FullName : "Microservices.Ecommerce.WebViteApp.Server");
                         b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                     }));
                 }

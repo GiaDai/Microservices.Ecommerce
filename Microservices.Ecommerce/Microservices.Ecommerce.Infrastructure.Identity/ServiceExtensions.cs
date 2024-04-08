@@ -69,7 +69,8 @@ namespace Microservices.Ecommerce.Infrastructure.Identity
                                 maxRetryCount: 5,
                                 maxRetryDelay: TimeSpan.FromSeconds(30),
                                 errorNumbersToAdd: null);
-                            b.MigrationsAssembly(env.IsProduction() ? typeof(IdentityContext).Assembly.FullName : "Microservices.Ecommerce.WebApi");
+                            //b.MigrationsAssembly(env.IsProduction() ? typeof(IdentityContext).Assembly.FullName : "Microservices.Ecommerce.WebViteApp.Server");
+                            b.MigrationsAssembly(typeof(IdentityContext).Assembly.FullName);
                         }));
                 }
                 services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<IdentityContext>().AddDefaultTokenProviders();
@@ -96,7 +97,7 @@ namespace Microservices.Ecommerce.Infrastructure.Identity
                     options.UseNpgsql(identityConStr,
                         b =>
                         {
-                            b.MigrationsAssembly(env.IsProduction() ? typeof(IdentityContext).Assembly.FullName : "Microservices.Ecommerce.WebApi");
+                            b.MigrationsAssembly(env.IsProduction() ? typeof(IdentityContext).Assembly.FullName : "Microservices.Ecommerce.WebViteApp.Server");
                         }));
                 }
                 services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<IdentityContext>().AddDefaultTokenProviders();
