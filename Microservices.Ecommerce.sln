@@ -29,7 +29,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservices.Ecommerce.Web
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Console", "Console", "{20997C1E-E314-4F53-B51C-253DD3D847F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservices.Ecommerce.Console", "Microservices.Ecommerce\Microservices.Ecommerce.Console\Microservices.Ecommerce.Console.csproj", "{DACECA70-3785-4E0F-87B7-2338194F9EEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservices.Ecommerce.Console", "Microservices.Ecommerce\Microservices.Ecommerce.Console\Microservices.Ecommerce.Console.csproj", "{DACECA70-3785-4E0F-87B7-2338194F9EEF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservices.Ecommerce.WebViteApp.Server", "Microservices.Ecommerce\Microservices.Ecommerce.WebViteApp.Server\Microservices.Ecommerce.WebViteApp.Server.csproj", "{3B669DDF-A114-4089-815A-46FAAFE23D98}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "microservices.ecommerce.webviteapp.client", "Microservices.Ecommerce\microservices.ecommerce.webviteapp.client\microservices.ecommerce.webviteapp.client.esproj", "{9D649B23-2418-4656-B35E-8FDB6F61D51E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +73,16 @@ Global
 		{DACECA70-3785-4E0F-87B7-2338194F9EEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DACECA70-3785-4E0F-87B7-2338194F9EEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DACECA70-3785-4E0F-87B7-2338194F9EEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B669DDF-A114-4089-815A-46FAAFE23D98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B669DDF-A114-4089-815A-46FAAFE23D98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B669DDF-A114-4089-815A-46FAAFE23D98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B669DDF-A114-4089-815A-46FAAFE23D98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D649B23-2418-4656-B35E-8FDB6F61D51E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D649B23-2418-4656-B35E-8FDB6F61D51E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D649B23-2418-4656-B35E-8FDB6F61D51E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{9D649B23-2418-4656-B35E-8FDB6F61D51E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D649B23-2418-4656-B35E-8FDB6F61D51E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D649B23-2418-4656-B35E-8FDB6F61D51E}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +101,8 @@ Global
 		{E19CF517-3036-47DB-9FD4-B25E79F0A695} = {A81983F9-EB63-463F-BECF-EDF38C591DB6}
 		{20997C1E-E314-4F53-B51C-253DD3D847F7} = {1EE8FAA2-3280-4E42-A495-BC1D2B4B9FD7}
 		{DACECA70-3785-4E0F-87B7-2338194F9EEF} = {20997C1E-E314-4F53-B51C-253DD3D847F7}
+		{3B669DDF-A114-4089-815A-46FAAFE23D98} = {A81983F9-EB63-463F-BECF-EDF38C591DB6}
+		{9D649B23-2418-4656-B35E-8FDB6F61D51E} = {A81983F9-EB63-463F-BECF-EDF38C591DB6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A2220EBF-09CA-4C51-88CF-576208450A0E}
