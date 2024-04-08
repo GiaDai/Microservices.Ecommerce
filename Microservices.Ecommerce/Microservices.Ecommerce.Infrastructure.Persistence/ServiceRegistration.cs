@@ -83,7 +83,8 @@ namespace Microservices.Ecommerce.Infrastructure.Persistence
                     appConnStr,
                     b =>
                     {
-                        b.MigrationsAssembly(isProduction ? typeof(ApplicationDbContext).Assembly.FullName : "Microservices.Ecommerce.WebViteApp.Server");
+                        //b.MigrationsAssembly(isProduction ? typeof(ApplicationDbContext).Assembly.FullName : "Microservices.Ecommerce.WebViteApp.Server");
+                        b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
                         b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                     }));
                 }

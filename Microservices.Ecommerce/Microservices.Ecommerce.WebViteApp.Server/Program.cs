@@ -31,9 +31,11 @@ _services.AddScoped<IAuthenticatedUserService, AuthenticatedUserService>();
 _services.AddEndpointsApiExplorer();
 _services.AddSwaggerGen();
 
-using (var scope = _services.BuildServiceProvider())
+var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
 {
-    //Read Configuration from appSettings
+   //Read Configuration from appSettings
     var config = new ConfigurationBuilder()
         .AddJsonFile("appsettings.json")
         .Build();
@@ -43,13 +45,13 @@ using (var scope = _services.BuildServiceProvider())
         .CreateLogger();
     try
     {
-        var dbContext = scope.GetRequiredService<ApplicationDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         dbContext.Database.Migrate();
-        var identityDbContext = scope.GetRequiredService<IdentityDbContext>();
+        var identityDbContext = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
         identityDbContext.Database.Migrate();
 
-        var userManager = scope.GetRequiredService<UserManager<ApplicationUser>>();
-        var roleManager = scope.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
         await Microservices.Ecommerce.Infrastructure.Identity.Seeds.DefaultRoles.SeedAsync(userManager, roleManager);
         await Microservices.Ecommerce.Infrastructure.Identity.Seeds.DefaultSuperAdmin.SeedAsync(userManager, roleManager);
@@ -65,10 +67,7 @@ using (var scope = _services.BuildServiceProvider())
     {
         Log.CloseAndFlush();
     }
-
 }
-
-var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

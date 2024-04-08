@@ -1,6 +1,7 @@
 version: '3.0'
 services:
   postgres:
+    container_name: postgres
     image: postgres:11.4-alpine
     restart: always
     ports:
@@ -8,3 +9,23 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    networks:
+      - microservicesecommerce
+  
+  webvite:
+    container_name: webvite
+    image: webviteapp.ecommerce:v.0.1
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      POSTGRES_CONNECTION_STRING: Host=postgres;Database=postgres;Username=postgres;Password=postgres
+    networks:
+      - microservicesecommerce
+networks:
+  microservicesecommerce:
+    driver: bridge
+    name: microservicesecommerce
+    external: true
