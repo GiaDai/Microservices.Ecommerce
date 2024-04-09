@@ -2,6 +2,8 @@ dotnet ef dbcontext list
 dotnet ef migrations add InitialCreate --context ApplicationDbContext
 dotnet ef migrations add InitialCreate --context IdentityContext
 
+dotnet ef migrations add AddColPriceToProduct --context ApplicationDbContext -o ../Microservices.Ecommerce.Infrastructure.Persistence/Migrations
+
 dotnet ef database update --context ApplicationDbContext
 dotnet ef database update --context IdentityContext
 
