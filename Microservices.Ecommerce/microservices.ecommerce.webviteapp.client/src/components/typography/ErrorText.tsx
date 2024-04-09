@@ -7,7 +7,7 @@ interface ErrorTextProps {
 
 const ErrorText: FC<ErrorTextProps> = ({styleClass, children}) => {
     return(
-        <p className={`text-center  text-error ${styleClass}`}>{children}</p>
+        <p className={`text-error ${styleClass}`}>{children}</p>
     )
 }
 
