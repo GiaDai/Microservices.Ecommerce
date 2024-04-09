@@ -90,14 +90,15 @@ namespace Microservices.Ecommerce.Infrastructure.Identity
             {
                 var _dbSetting = scope.ServiceProvider.GetRequiredService<IDatabaseSettingsProvider>();
                 string identityConStr = _dbSetting.GetPostgresConnectionString();
-                
+                Console.WriteLine("identityConStr: " + identityConStr);
                 if (!string.IsNullOrWhiteSpace(identityConStr))
                 {
                     services.AddDbContext<IdentityContext>(options =>
                     options.UseNpgsql(identityConStr,
                         b =>
                         {
-                            b.MigrationsAssembly(env.IsProduction() ? typeof(IdentityContext).Assembly.FullName : "Microservices.Ecommerce.WebViteApp.Server");
+                            // b.MigrationsAssembly(env.IsProduction() ? typeof(IdentityContext).Assembly.FullName : "Microservices.Ecommerce.WebViteApp.Server");
+                            b.MigrationsAssembly(typeof(IdentityContext).Assembly.FullName);
                         }));
                 }
                 services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<IdentityContext>().AddDefaultTokenProviders();

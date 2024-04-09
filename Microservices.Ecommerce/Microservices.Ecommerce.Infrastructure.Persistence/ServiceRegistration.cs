@@ -67,7 +67,7 @@ namespace Microservices.Ecommerce.Infrastructure.Persistence
         }
 
         // Add persistence infrastructure for NpgSql
-        public static void AddNpgSqlPersistenceInfrastructure(this IServiceCollection services, IConfiguration configuration, bool isProduction)
+        public static void AddNpgSqlPersistenceInfrastructure(this IServiceCollection services, bool isProduction)
         {
             // Build the intermediate service provider
             var sp = services.BuildServiceProvider();
