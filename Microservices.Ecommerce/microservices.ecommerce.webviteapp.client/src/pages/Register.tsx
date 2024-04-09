@@ -1,10 +1,10 @@
 import { FC } from 'react'
-import Login from '../features/user/Login'
+import Register from '../features/user/Register'
 
 const ExternalPage: FC = () => {
     return(
         <div className="">
-            <Login />
+            <Register />
         </div>
     )
 }

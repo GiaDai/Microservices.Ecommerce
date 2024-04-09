@@ -1,10 +1,10 @@
 import { FC } from 'react'
-import Login from '../features/user/Login'
+import ForgotPassword from '../features/user/ForgotPassword'
 
 const ExternalPage: FC = () => {
     return(
         <div className="">
-            <Login />
+            <ForgotPassword />
         </div>
     )
 }
