@@ -49,7 +49,7 @@ const Login: FC = () => {
             {
                 onSuccess: (data: AuthenResponse) => {
                     const { userName, email } = data.data;
-                    signIn({ access: data.data.jwToken, refresh: data.data.jwToken }, userName, email, _values.password);
+                    signIn({ access: data.data.jwToken, refresh: data.data.jwToken }, userName, email);
                     if (rememberMe) {
                         Cookies.set('jwtToken', data.data.jwToken, { expires: 7 }); // The token will be stored for 7 days.
                     }
