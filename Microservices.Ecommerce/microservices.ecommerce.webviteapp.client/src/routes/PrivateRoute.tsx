@@ -1,10 +1,13 @@
 import { Navigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 // import { useAuth } from '@core/auth';
 
 // This is a simple check for authentication. You might have a more complex logic.
 const isAuthenticated = () => {
   // const token = useAuth.use.token();
-  const token = localStorage.getItem('token');
+  const tokenCookie = Cookies.get('jwtToken');
+  const tokenStorage = localStorage.getItem('token');
+  const token = tokenCookie || tokenStorage;
   return token != null;
 };
 

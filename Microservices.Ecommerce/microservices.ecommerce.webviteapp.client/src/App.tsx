@@ -2,7 +2,7 @@ import { lazy, useEffect } from "react";
 import { themeChange } from 'theme-change'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { QueryProvider } from './api/common/query-provider';
-import { hydrateAuth } from "./core";
+import { hydrateAuth, handleBeforeUnload, destroyBeforeUnload } from "./core";
 import PrivateRouteWrapper from './routes/PrivateRoute';
 
 const Layout = lazy(() => import('./containers/Layout'))
@@ -16,7 +16,11 @@ const App = () => {
     useEffect(() => {
         // 👆 daisy UI themes initialization
         hydrateAuth();
-        themeChange(false)
+        handleBeforeUnload();
+        themeChange(false);
+        return () => {
+            destroyBeforeUnload();
+        }
       }, [])
     return (
         <QueryProvider>

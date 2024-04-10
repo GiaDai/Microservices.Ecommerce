@@ -4,7 +4,7 @@ export type AuthenResponse = {
     errors?: any;
     data: AuthenData;
   }
-  interface AuthenData {
+export  interface AuthenData {
     id: string;
     userName: string;
     email: string;
