@@ -1,9 +1,8 @@
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
 import LandingIntro from './LandingIntro'
-import InputText from '../../components/input/InputText'
-import ErrorText from '../../components/typography/ErrorText'
-import { Formik, Form, Field, FieldProps, ErrorMessage } from 'formik'
+import InputField from '../../components/input/InputField'
+import { Formik, Form } from 'formik'
 import * as Yup from 'yup'
 
 interface LoginObj {
@@ -51,26 +50,8 @@ const Login: FC = () => {
                             {({ isSubmitting }) => (
                                 <Form>
                                     <div className="mb-4">
-                                        <Field
-                                            // as={InputText}
-                                            type="email"
-                                            name="email"
-                                            placeholder="Please enter your email"
-                                        />
-                                        <ErrorMessage name="email" render={msg => <ErrorText styleClass='text-sm'>{msg}</ErrorText>} />
-
-                                        <Field
-                                            name="password"
-                                        >
-                                            {({ field }: FieldProps) => (
-                                                <InputText
-                                                    type="password"
-                                                    placeholder="Please enter your password"
-                                                    defaultValue={field.value}
-                                                    updateFormValue={field.onChange} labelTitle={''} labelStyle={''} containerStyle={''} updateType={undefined} />
-                                            )}
-                                        </Field>
-                                        <ErrorMessage name="password" />
+                                    <InputField name="email" type="email" placeholder="Please enter your email" labelTitle="" labelStyle="text-primary" containerStyle="mt-4" />
+                                    <InputField name="password" type="password" placeholder="Please enter your password" labelTitle="" labelStyle="text-primary" containerStyle="mt-4" />
                                     </div>
 
                                     <div className='text-right text-primary'><Link to="/forgot-password"><span className="text-sm  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">Forgot Password?</span></Link>
