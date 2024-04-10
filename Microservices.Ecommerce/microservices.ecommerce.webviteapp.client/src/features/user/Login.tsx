@@ -1,11 +1,14 @@
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
 import LandingIntro from './LandingIntro'
-import InputField from '../../components/input/InputField'
+import InputField from '@components/input/InputField'
+import { useAuth } from '@core/index';
+import { useAuthenticate } from '@api/accounts';
+import type { AuthenRequest, AuthenResponse } from '@api/accounts';
 import { Formik, Form } from 'formik'
 import * as Yup from 'yup'
 
-interface LoginObj {
+interface ILogin {
     password: string;
     email: string;
 }
@@ -20,17 +23,28 @@ const validationSchema = Yup.object().shape({
 });
 
 const Login: FC = () => {
-    const INITIAL_LOGIN_OBJ: LoginObj = {
+    const { mutate: authenticate, isPending } = useAuthenticate();
+
+    const signIn = useAuth.use.signIn();
+    const INITIAL_LOGIN_OBJ: ILogin = {
         password: "",
         email: ""
     }
 
-    const submitForm = (_values: LoginObj, { setSubmitting }: { setSubmitting: any }) => {
-        setSubmitting(true);
-        // Call API to check user credentials and save token in localstorage
-        localStorage.setItem("token", "DumyTokenHere")
-        setSubmitting(false)
-        window.location.href = '/app/welcome'
+    const submitForm = (_values: ILogin, { }: { setSubmitting: any }) => {
+        authenticate(
+            { email: _values.email, password: _values.password } as AuthenRequest,
+            {
+                onSuccess: (data: AuthenResponse) => {
+                    signIn({ access: data.data.jwToken , refresh: data.data.jwToken });
+                    window.location.href = '/app/welcome';
+                },
+                onError: (error: any) => {
+                    console.log(error);
+                    alert("Invalid credentials");
+                }
+            }
+        );
     }
 
     return (
@@ -47,7 +61,7 @@ const Login: FC = () => {
                             validationSchema={validationSchema}
                             onSubmit={submitForm}
                         >
-                            {({ isSubmitting }) => (
+                            {() => (
                                 <Form>
                                     <div className="mb-4">
                                     <InputField name="email" type="email" placeholder="Please enter your email" labelTitle="" labelStyle="text-primary" containerStyle="mt-4" />
@@ -57,7 +71,7 @@ const Login: FC = () => {
                                     <div className='text-right text-primary'><Link to="/forgot-password"><span className="text-sm  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">Forgot Password?</span></Link>
                                     </div>
 
-                                    <button type="submit" className={"btn mt-2 w-full btn-primary" + (isSubmitting ? " loading" : "")}>Login</button>
+                                    <button type="submit" className={"btn mt-2 w-full btn-primary" + (isPending ? " loading" : "")}>Login</button>
 
                                     <div className='text-center mt-4'>Don't have an account yet? <Link to="/register"><span className="  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">Register</span></Link></div>
                                 </Form>

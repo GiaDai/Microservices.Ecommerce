@@ -38,7 +38,10 @@ export default defineConfig({
     plugins: [plugin()],
     resolve: {
         alias: {
-            '@': fileURLToPath(new URL('./src', import.meta.url))
+            '@': fileURLToPath(new URL('./src', import.meta.url)),
+            '@components': path.resolve(__dirname, './src/components'),
+            '@core': path.resolve(__dirname, './src/core'),
+            '@api': path.resolve(__dirname, './src/api'),
         }
     },
     server: {

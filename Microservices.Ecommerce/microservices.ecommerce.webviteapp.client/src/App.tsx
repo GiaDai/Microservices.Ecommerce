@@ -1,6 +1,7 @@
 import { lazy, useEffect } from "react";
 import { themeChange } from 'theme-change'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { QueryProvider } from './api/common/query-provider';
 
 const Layout = lazy(() => import('./containers/Layout'))
 const Login = lazy(() => import('./pages/Login'));
@@ -15,7 +16,7 @@ const App = () => {
         themeChange(false)
       }, [])
     return (
-        <>
+        <QueryProvider>
             <Router>
                 <Routes>
                     <Route path="/" element={<Login />} />
@@ -26,7 +27,7 @@ const App = () => {
                     <Route path="/app/*" element={<Layout />} />
                 </Routes>
             </Router>
-        </>
+        </QueryProvider>
     );
 }
 
