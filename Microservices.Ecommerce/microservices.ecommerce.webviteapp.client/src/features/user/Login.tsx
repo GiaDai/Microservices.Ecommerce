@@ -1,12 +1,15 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { Link } from 'react-router-dom'
 import LandingIntro from './LandingIntro'
 import InputField from '@components/input/InputField'
 import { useAuth } from '@core/index';
 import { useAuthenticate } from '@api/accounts';
-import type { AuthenRequest, AuthenResponse } from '@api/accounts';
+import type { AuthenRequest, AuthenResponse, AuthenResponseError } from '@api/accounts';
+import type { AxiosError } from 'axios';
+import Cookies from 'js-cookie';
 import { Formik, Form } from 'formik'
 import * as Yup from 'yup'
+import { useNavigate } from 'react-router-dom';
 
 interface ILogin {
     password: string;
@@ -24,24 +27,38 @@ const validationSchema = Yup.object().shape({
 
 const Login: FC = () => {
     const { mutate: authenticate, isPending } = useAuthenticate();
-
+    const [rememberMe, setRememberMe] = useState(false);
+    const navigate = useNavigate();
     const signIn = useAuth.use.signIn();
+    const token = useAuth.use.token();
+    if (token) {
+        navigate('/app/welcome');
+    }
     const INITIAL_LOGIN_OBJ: ILogin = {
         password: "",
         email: ""
     }
+
+    const handleRememberMeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRememberMe(event.target.checked);
+    };
 
     const submitForm = (_values: ILogin, { }: { setSubmitting: any }) => {
         authenticate(
             { email: _values.email, password: _values.password } as AuthenRequest,
             {
                 onSuccess: (data: AuthenResponse) => {
-                    signIn({ access: data.data.jwToken , refresh: data.data.jwToken });
-                    window.location.href = '/app/welcome';
+                    const { userName, email } = data.data;
+                    signIn({ access: data.data.jwToken, refresh: data.data.jwToken }, userName, email, _values.password);
+                    if (rememberMe) {
+                        Cookies.set('jwtToken', data.data.jwToken, { expires: 7 }); // The token will be stored for 7 days.
+                    }
+                    // Redirect to /app/welcome use history.push('/app/welcome')   
+                    navigate('/app/welcome');
                 },
-                onError: (error: any) => {
-                    console.log(error);
-                    alert("Invalid credentials");
+                onError: (error: AxiosError) => {
+                    console.log((error.response?.data as AuthenResponseError)?.Message || error.message);
+                    alert((error.response?.data as AuthenResponseError)?.Message || error.message);
                 }
             }
         );
@@ -64,8 +81,14 @@ const Login: FC = () => {
                             {() => (
                                 <Form>
                                     <div className="mb-4">
-                                    <InputField name="email" type="email" placeholder="Please enter your email" labelTitle="" labelStyle="text-primary" containerStyle="mt-4" />
-                                    <InputField name="password" type="password" placeholder="Please enter your password" labelTitle="" labelStyle="text-primary" containerStyle="mt-4" />
+                                        <InputField name="email" type="email" placeholder="Please enter your email" labelTitle="" labelStyle="text-primary" containerStyle="mt-4" />
+                                        <InputField name="password" type="password" placeholder="Please enter your password" labelTitle="" labelStyle="text-primary" containerStyle="mt-4" />
+                                        <div className="mb-4 mt-4">
+                                            <label className="flex items-center space-x-3">
+                                                <input type="checkbox" checked={rememberMe} onChange={handleRememberMeChange} className="form-checkbox h-5 w-5 text-blue-600" />
+                                                <span className="text-gray-700 dark:text-gray-400">Remember me?</span>
+                                            </label>
+                                        </div>
                                     </div>
 
                                     <div className='text-right text-primary'><Link to="/forgot-password"><span className="text-sm  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">Forgot Password?</span></Link>

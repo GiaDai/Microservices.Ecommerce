@@ -7,7 +7,8 @@ import MoonIcon from '@heroicons/react/24/outline/MoonIcon'
 import SunIcon from '@heroicons/react/24/outline/SunIcon'
 import { openRightDrawer } from '../features/common/rightDrawerSlice';
 import { GLOBAL_CONSTANTS } from '../utils/globalConstantUtil'
-import { Link } from 'react-router-dom'
+import { useAuth } from '@core/auth'
+import { Link, useNavigate } from 'react-router-dom'
 
 interface HeaderState {
     header: {
@@ -17,7 +18,8 @@ interface HeaderState {
 }
 
 const Header: FC = () => {
-
+    const signOut = useAuth.use.signOut();
+    const navigate = useNavigate();
     const dispatch = useDispatch()
     const {noOfNotifications, pageTitle} = useSelector((state: HeaderState) => state.header)
     const [currentTheme, setCurrentTheme] = useState(localStorage.getItem("theme"))
@@ -40,8 +42,8 @@ const Header: FC = () => {
     }
 
     const logoutUser = () => {
-        localStorage.clear();
-        window.location.href = '/'
+        signOut();
+        navigate('/login');
     }
 
     return(
