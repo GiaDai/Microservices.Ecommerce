@@ -71,7 +71,7 @@ export const destroyBeforeUnload = () => {
 
 const handleBeforeBrowserClose = () => {
   // Kiểm tra nếu event.returnValue là null hoặc undefined, nghĩa là trình duyệt đang đóng
-  removeToken();
-  removeUser();
-  removeEmail();
+  // removeToken();
+  // removeUser();
+  // removeEmail();
 };

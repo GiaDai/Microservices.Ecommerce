@@ -4,12 +4,15 @@ import LandingIntro from './LandingIntro'
 import InputField from '@components/input/InputField'
 import { useAuth } from '@core/index';
 import { useAuthenticate } from '@api/accounts';
+import SuspenseContent from '@containers/SuspenseContent';
 import type { AuthenRequest, AuthenResponse, AuthenResponseError } from '@api/accounts';
 import type { AxiosError } from 'axios';
 import Cookies from 'js-cookie';
 import { Formik, Form } from 'formik'
 import * as Yup from 'yup'
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux'
+import { showToast } from '@features/common/toastSlice'
 
 interface ILogin {
     password: string;
@@ -26,6 +29,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const Login: FC = () => {
+    const dispatch = useDispatch();
     const { mutate: authenticate, isPending } = useAuthenticate();
     const [rememberMe, setRememberMe] = useState(false);
     const navigate = useNavigate();
@@ -53,18 +57,21 @@ const Login: FC = () => {
                     if (rememberMe) {
                         Cookies.set('jwtToken', data.data.jwToken, { expires: 7 }); // The token will be stored for 7 days.
                     }
+                    dispatch(showToast({ message: 'Login successful', type: 'success' }));
                     // Redirect to /app/welcome use history.push('/app/welcome')   
                     navigate('/app/welcome');
                 },
                 onError: (error: AxiosError) => {
-                    console.log((error.response?.data as AuthenResponseError)?.Message || error.message);
-                    alert((error.response?.data as AuthenResponseError)?.Message || error.message);
+                    const errorMessage = (error.response?.data as AuthenResponseError)?.Message || error.message;
+                    console.error(errorMessage);
+                    dispatch(showToast({ message: errorMessage, type: 'error' }));
                 }
             }
         );
     }
 
     return (
+        <>
         <div className="min-h-screen bg-base-200 flex items-center">
             <div className="card mx-auto w-full max-w-5xl  shadow-xl">
                 <div className="grid  md:grid-cols-2 grid-cols-1  bg-base-100 rounded-xl">
@@ -94,7 +101,7 @@ const Login: FC = () => {
                                     <div className='text-right text-primary'><Link to="/forgot-password"><span className="text-sm  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">Forgot Password?</span></Link>
                                     </div>
 
-                                    <button type="submit" className={"btn mt-2 w-full btn-primary" + (isPending ? " loading" : "")}>Login</button>
+                                    <button type="submit" className="btn mt-2 w-full btn-primary">Login</button>
 
                                     <div className='text-center mt-4'>Don't have an account yet? <Link to="/register"><span className="  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">Register</span></Link></div>
                                 </Form>
@@ -104,6 +111,8 @@ const Login: FC = () => {
                 </div>
             </div>
         </div>
+        { isPending && <SuspenseContent loadingText='Logging' />}
+        </>
     )
 }
 

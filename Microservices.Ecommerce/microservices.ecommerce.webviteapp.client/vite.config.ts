@@ -42,6 +42,8 @@ export default defineConfig({
             '@components': path.resolve(__dirname, './src/components'),
             '@core': path.resolve(__dirname, './src/core'),
             '@api': path.resolve(__dirname, './src/api'),
+            '@containers': path.resolve(__dirname, './src/containers'),
+            '@features': path.resolve(__dirname, './src/features'),
         }
     },
     server: {

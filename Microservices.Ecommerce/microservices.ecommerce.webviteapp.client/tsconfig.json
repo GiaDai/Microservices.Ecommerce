@@ -9,7 +9,9 @@
     "paths": {
       "@components/*": ["src/components/*"],
       "@core/*": ["src/core/*"],
-      "@api/*": ["src/api/*"]
+      "@api/*": ["src/api/*"],
+      "@containers/*": ["src/containers/*"],
+      "@features/*": ["src/features/*"],
     },
     /* Bundler mode */
     "moduleResolution": "bundler",

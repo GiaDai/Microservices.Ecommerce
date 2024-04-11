@@ -1,7 +1,8 @@
 import { FC } from 'react'
-import Login from '../features/user/Login'
+import Login from '@features/user/Login'
+
 const ExternalPage: FC = () => {
-    return(
+    return (
         <div className="">
             <Login />
         </div>
