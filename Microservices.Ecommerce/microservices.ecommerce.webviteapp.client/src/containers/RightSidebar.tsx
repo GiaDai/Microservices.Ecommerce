@@ -1,9 +1,9 @@
 import XMarkIcon  from '@heroicons/react/24/solid/XMarkIcon'
 import { useDispatch, useSelector } from 'react-redux'
-import NotificationBodyRightDrawer from '../features/common/components/NotificationBodyRightDrawer'
-import { closeRightDrawer } from '../features/common/rightDrawerSlice'
+import NotificationBodyRightDrawer from '@features/common/components/NotificationBodyRightDrawer'
+import { closeRightDrawer } from '@features/common/rightDrawerSlice'
 import { GLOBAL_CONSTANTS } from '../utils/globalConstantUtil'
-import CalendarEventsBodyRightDrawer from '../features/calendar/CalendarEventsBodyRightDrawer'
+import CalendarEventsBodyRightDrawer from '@features/calendar/CalendarEventsBodyRightDrawer'
 
 const RightSidebar: React.FC = () => {
 

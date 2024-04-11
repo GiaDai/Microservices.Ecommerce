@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import LandingIntro from './LandingIntro'
 import InputField from '@components/input/InputField'
@@ -35,9 +35,12 @@ const Login: FC = () => {
     const navigate = useNavigate();
     const signIn = useAuth.use.signIn();
     const token = useAuth.use.token();
-    if (token) {
-        navigate('/app/welcome');
-    }
+    useEffect(() => {
+        if (token) {
+            navigate('/app/welcome')
+        }
+    }, [token, navigate]);
+
     const INITIAL_LOGIN_OBJ: ILogin = {
         password: "",
         email: ""

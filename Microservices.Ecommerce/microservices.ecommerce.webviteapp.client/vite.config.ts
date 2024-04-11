@@ -44,6 +44,7 @@ export default defineConfig({
             '@api': path.resolve(__dirname, './src/api'),
             '@containers': path.resolve(__dirname, './src/containers'),
             '@features': path.resolve(__dirname, './src/features'),
+            '@pages': path.resolve(__dirname, './src/pages'),
         }
     },
     server: {
