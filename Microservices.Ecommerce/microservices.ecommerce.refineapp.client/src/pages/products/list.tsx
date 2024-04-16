@@ -1,29 +1,33 @@
 
 import {
     List,
-    useTable,
 } from "@refinedev/antd";
-import { useList, HttpError } from "@refinedev/core";
+import { useCustom } from "@refinedev/core";
 import { Table } from "antd";
 import { IProductResponse, IProduct } from "./types";
 
 export const ProductList: React.FC = () => {
-    const { data, isLoading, isError } = useList<IProductResponse, HttpError>({
-        resource: "api/v1/product",
+    const { data, isLoading } = useCustom<IProductResponse>({
+        url: `/api/v1/product`,
+        method: "get",
+        config: {
+            query: {
+                pageNumber: 1,
+                pageSize: 10,
+            },
+        }
     });
-    const products = data?.data? ?? [];
-    console.log(products);
+
     if (isLoading) {
         return <div>Loading...</div>;
-      }
-    
-      if (isError) {
-        return <div>Something went wrong!</div>;
-      }
+    }
+
     return <List>
-        <Table dataSource={products} rowKey="id">
+        <Table dataSource={data?.data?.data || []} rowKey="id">
             <Table.Column<IProduct> title="Name" dataIndex="name" />
             <Table.Column<IProduct> title="Description" dataIndex="description" />
+            <Table.Column<IProduct> title="Price" dataIndex="price" />
+            <Table.Column<IProduct> title="Rate" dataIndex="rate" />
             <Table.Column<IProduct> title="Price" dataIndex="price" />
         </Table>
     </List>

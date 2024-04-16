@@ -24,7 +24,7 @@ const App = () => {
                         <Refine
                             notificationProvider={useNotificationProvider}
                             routerProvider={routerBindings}
-                            dataProvider={dataProvider("https://localhost:5174")}
+                            dataProvider={dataProvider("https://localhost:5173")}
                             options={{
                                 syncWithLocation: true,
                                 warnWhenUnsavedChanges: true,
