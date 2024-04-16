@@ -8,7 +8,7 @@ const Page404 = lazy(() => import('@pages/protected/404'))
 const Blank = lazy(() => import('@pages/protected/Blank'))
 const Charts = lazy(() => import('@pages/protected/Charts'))
 const Leads = lazy(() => import('../pages/protected/Leads'))
-// const Integration = lazy(() => import('../pages/protected/Integration'))
+const Integration = lazy(() => import('../pages/protected/Integration'))
 // const Team = lazy(() => import('../pages/protected/Team'))
 // const Transactions = lazy(() => import('../pages/protected/Transactions'))
 const Bills = lazy(() => import('@pages/protected/Bills'))
@@ -59,10 +59,10 @@ const routes = [
   //   path: '/components',
   //   component: DocComponents,
   // },
-  // {
-  //   path: '/integration',
-  //   component: Integration,
-  // },
+  {
+    path: '/integration',
+    component: Integration,
+  },
   {
     path: '/charts',
     component: Charts,
