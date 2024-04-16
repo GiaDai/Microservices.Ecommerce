@@ -4,12 +4,9 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>1f3e1703-d931-42e7-a8d1-deb36266655f</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <SpaRoot>..\microservices.ecommerce.webviteapp.client</SpaRoot>
+    <SpaRoot>..\microservices.ecommerce.refineapp.client</SpaRoot>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
     <SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
-    <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,19 +31,15 @@
 	  <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
 	  <PackageReference Include="FluentValidation.AspNetCore" Version="9.1.2" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.0" />
-      <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+	  <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microservices.Ecommerce.Infrastructure.Identity\Microservices.Ecommerce.Infrastructure.Identity.csproj" />
     <ProjectReference Include="..\Microservices.Ecommerce.Infrastructure.Persistence\Microservices.Ecommerce.Infrastructure.Persistence.csproj" />
-    <ProjectReference Include="..\microservices.ecommerce.webviteapp.client\microservices.ecommerce.webviteapp.client.esproj">
+    <ProjectReference Include="..\microservices.ecommerce.refineapp.client\microservices.ecommerce.refineapp.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\v1\" />
   </ItemGroup>
 
 </Project>
