@@ -1,11 +1,10 @@
 using Microservices.Ecommerce.Application;
 using Microservices.Ecommerce.Application.Interfaces;
+using Microservices.Ecommerce.GraphQL.Extensions;
+using Microservices.Ecommerce.GraphQL.Services;
 using Microservices.Ecommerce.Infrastructure.Identity;
 using Microservices.Ecommerce.Infrastructure.Persistence;
 using Microservices.Ecommerce.Infrastructure.Shared;
-using Microservices.Ecommerce.Application.Interfaces;
-using Microservices.Ecommerce.GraphQL.Extensions;
-using Microservices.Ecommerce.GraphQL.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var _services = builder.Services;
@@ -22,6 +21,7 @@ _services.AddControllers();
 _services.AddApiVersioningExtension();
 _services.AddHealthChecks();
 _services.AddScoped<IAuthenticatedUserService, AuthenticatedUserService>();
+_services.AddGraphQLExtension(_env);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -37,12 +37,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseRouting();
 app.UseAuthorization();
 app.UseAuthorization();
 app.UseSwaggerExtension();
 app.UseErrorHandlingMiddleware();
 app.UseHealthChecks("/health");
-app.MapControllers();
+app.UseWebSockets();
+app.UseEndpoints(endpoints =>
+{
+    _ = endpoints.MapGraphQL("/graphql");
+    endpoints.MapControllers();
+});
 
 app.Run();

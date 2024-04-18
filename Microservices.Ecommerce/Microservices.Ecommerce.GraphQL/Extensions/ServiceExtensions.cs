@@ -1,4 +1,8 @@
-﻿using Microservices.Ecommerce.Infrastructure.Shared.Environments;
+﻿//using AppAny.HotChocolate.FluentValidation;
+using Microservices.Ecommerce.GraphQL.GraphQL.Mutations;
+using Microservices.Ecommerce.GraphQL.GraphQL.Queries;
+using Microservices.Ecommerce.GraphQL.GraphQL.Subcriptions;
+using Microservices.Ecommerce.Infrastructure.Shared.Environments;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 
@@ -68,6 +72,16 @@ namespace Microservices.Ecommerce.GraphQL.Extensions
             services.AddTransient<IDatabaseSettingsProvider, DatabaseSettingsProvider>();
             services.AddTransient<IRedisSettingsProvider, RedisSettingsProvider>();
             services.AddTransient<IElasticSettingsProvider, ElasticSettingsProvider>();
+        }
+
+        public static void AddGraphQLExtension(this IServiceCollection services, IWebHostEnvironment _env)
+        {
+            services.AddGraphQLServer()
+                .AddQueryType<Query>()
+                .AddMutationType<Mutation>()
+                .AddSubscriptionType<Subscription>();
+
+            services.AddInMemorySubscriptions();
         }
     }
 }
