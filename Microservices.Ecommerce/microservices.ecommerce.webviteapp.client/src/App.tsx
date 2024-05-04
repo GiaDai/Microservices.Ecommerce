@@ -10,6 +10,7 @@ import * as Icons from "@ant-design/icons";
 import { Refine, Authenticated } from "@refinedev/core";
 import { ConfigProvider, App as AntdApp } from "antd";
 import React from "react";
+import routerProvider from "@refinedev/react-router-v6";
 import { dataProvider, authProvider } from "@providers/index";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { Header } from "@components/index";
@@ -17,6 +18,7 @@ import {
   CatchAllNavigate,
   NavigateToResource,
 } from "@refinedev/react-router-v6";
+import { CreateProduct, EditProduct, ListProduct, ShowProduct } from "./pages";
 const { InfoCircleOutlined } = Icons;
 const App: React.FC = () => {
   return (
@@ -26,11 +28,25 @@ const App: React.FC = () => {
           <Refine
             dataProvider={dataProvider}
             authProvider={authProvider}
+            routerProvider={routerProvider}
             notificationProvider={useNotificationProvider}
             resources={[
               {
                 name: "dashboard",
                 list: "/dashboard",
+                icon: (
+                  <InfoCircleOutlined
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                  />
+                ),
+              },
+              {
+                name: "products",
+                list: "/products",
+                create: "/products/create",
+                edit: "/products/:id/edit",
+                show: "/products/:id",
                 icon: (
                   <InfoCircleOutlined
                     onPointerEnterCapture={undefined}
@@ -63,6 +79,12 @@ const App: React.FC = () => {
                 />
                 <Route path="/dashboard">
                   <Route index element={<h1>Dashboard</h1>} />
+                </Route>
+                <Route path="/products">
+                  <Route index element={<ListProduct />} />
+                  <Route path="create" element={<CreateProduct />} />
+                  <Route path=":id" element={<ShowProduct />} />
+                  <Route path=":id/edit" element={<EditProduct />} />
                 </Route>
               </Route>
               <Route

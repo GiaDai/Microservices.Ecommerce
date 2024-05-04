@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
 using MediatR;
-using Microservices.Ecommerce.Application.Filters;
 using Microservices.Ecommerce.Application.Interfaces.Repositories;
 using Microservices.Ecommerce.Application.Wrappers;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

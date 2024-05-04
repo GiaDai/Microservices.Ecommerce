@@ -34,8 +34,8 @@ export const authProvider: AuthProvider = {
     });
 
     const data = await response.json();
-    if (data.data.jwToken) {
-      localStorage.setItem("access_token", data.data.jwToken);
+    if (data.Data.JWToken) {
+      localStorage.setItem("access_token", data.Data.JWToken);
       return {
         success: true,
         redirectTo: "/dashboard",

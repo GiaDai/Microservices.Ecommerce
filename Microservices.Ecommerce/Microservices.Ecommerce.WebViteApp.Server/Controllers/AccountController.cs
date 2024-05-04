@@ -32,9 +32,9 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers
                 var roles = identity.FindAll(ClaimTypes.Role).Select(x => x.Value);
                 return Ok(new
                 {
-                    Email = email,
-                    Name = name,
-                    Roles = roles
+                    email,
+                    name,
+                    roles
                 });
             }
             else

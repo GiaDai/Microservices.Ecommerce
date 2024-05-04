@@ -19,7 +19,7 @@ _services.AddNpgSqlIdentityInfrastructure(_config, _env);
 _services.AddNpgSqlPersistenceInfrastructure(_env.IsProduction());
 _services.AddSharedInfrastructure(_config);
 _services.AddSwaggerExtension();
-_services.AddControllers();
+_services.AddControllers().AddJsonOptions(opts => opts.JsonSerializerOptions.PropertyNamingPolicy = null);
 _services.AddApiVersioningExtension();
 _services.AddHealthChecks();
 _services.AddScoped<IAuthenticatedUserService, AuthenticatedUserService>();
