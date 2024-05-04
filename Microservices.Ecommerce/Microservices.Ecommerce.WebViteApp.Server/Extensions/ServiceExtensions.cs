@@ -10,11 +10,11 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Extensions
         {
             services.AddSwaggerGen(c =>
             {
-                c.IncludeXmlComments(string.Format(@"{0}\Microservices.Ecommerce.WebApi.xml", System.AppDomain.CurrentDomain.BaseDirectory));
+                c.IncludeXmlComments(string.Format(@"Microservices.Ecommerce.WebViteApp.Server.xml"));
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
-                    Title = "Clean Architecture - Microservices.Ecommerce.WebApi",
+                    Title = "Clean Architecture - Microservices.Ecommerce.WebViteApp.Server",
                     Description = "This Api will be responsible for overall data distribution and authorization.",
                     Contact = new OpenApiContact
                     {

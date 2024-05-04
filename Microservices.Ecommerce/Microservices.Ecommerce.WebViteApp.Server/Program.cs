@@ -18,13 +18,14 @@ _services.AddApplicationLayer();
 _services.AddNpgSqlIdentityInfrastructure(_config, _env);
 _services.AddNpgSqlPersistenceInfrastructure(_env.IsProduction());
 _services.AddSharedInfrastructure(_config);
+_services.AddSwaggerExtension();
 _services.AddControllers();
 _services.AddApiVersioningExtension();
 _services.AddHealthChecks();
 _services.AddScoped<IAuthenticatedUserService, AuthenticatedUserService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 _services.AddEndpointsApiExplorer();
-_services.AddSwaggerGen();
+
 
 var app = builder.Build();
 
@@ -40,8 +41,7 @@ app.UseStaticFiles();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerExtension();
     // app.UseDeveloperExceptionPage();
     app.UseErrorHandlingMiddleware();
 }
@@ -53,8 +53,10 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseHealthChecks("/health");
 app.MapControllers();
 

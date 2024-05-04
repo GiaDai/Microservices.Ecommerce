@@ -7,12 +7,10 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@components/*": ["src/components/*"],
-      "@core/*": ["src/core/*"],
-      "@api/*": ["src/api/*"],
-      "@containers/*": ["src/containers/*"],
-      "@features/*": ["src/features/*"],
+      "@providers/*": ["src/providers/*"],
+      "@authens/*": ["src/pages/authens/*"],
       "@pages/*": ["src/pages/*"],
+      "@components/*": ["src/components/*"],
     },
     /* Bundler mode */
     "moduleResolution": "bundler",

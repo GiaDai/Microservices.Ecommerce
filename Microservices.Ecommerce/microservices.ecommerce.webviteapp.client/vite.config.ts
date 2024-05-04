@@ -1,68 +1,77 @@
-import { fileURLToPath, URL } from 'node:url';
+import { fileURLToPath, URL } from "node:url";
 
-import { defineConfig } from 'vite';
-import plugin from '@vitejs/plugin-react';
-import fs from 'fs';
-import path from 'path';
-import child_process from 'child_process';
-import { env } from 'process';
+import { defineConfig } from "vite";
+import plugin from "@vitejs/plugin-react";
+import fs from "fs";
+import path from "path";
+import child_process from "child_process";
+import { env } from "process";
 
 const baseFolder =
-    env.APPDATA !== undefined && env.APPDATA !== ''
-        ? `${env.APPDATA}/ASP.NET/https`
-        : `${env.HOME}/.aspnet/https`;
+  env.APPDATA !== undefined && env.APPDATA !== ""
+    ? `${env.APPDATA}/ASP.NET/https`
+    : `${env.HOME}/.aspnet/https`;
 
 const certificateName = "microservices.ecommerce.webviteapp.client";
 const certFilePath = path.join(baseFolder, `${certificateName}.pem`);
 const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
 
 if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
-    if (0 !== child_process.spawnSync('dotnet', [
-        'dev-certs',
-        'https',
-        '--export-path',
+  if (
+    0 !==
+    child_process.spawnSync(
+      "dotnet",
+      [
+        "dev-certs",
+        "https",
+        "--export-path",
         certFilePath,
-        '--format',
-        'Pem',
-        '--no-password',
-    ], { stdio: 'inherit', }).status) {
-        throw new Error("Could not create certificate.");
-    }
+        "--format",
+        "Pem",
+        "--no-password",
+      ],
+      { stdio: "inherit" }
+    ).status
+  ) {
+    throw new Error("Could not create certificate.");
+  }
 }
 
-const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
-    env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'https://localhost:7013';
+const target = env.ASPNETCORE_HTTPS_PORT
+  ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}`
+  : env.ASPNETCORE_URLS
+  ? env.ASPNETCORE_URLS.split(";")[0]
+  : "https://localhost:7013";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [plugin()],
-    resolve: {
-        alias: {
-            '@': fileURLToPath(new URL('./src', import.meta.url)),
-            '@components': path.resolve(__dirname, './src/components'),
-            '@core': path.resolve(__dirname, './src/core'),
-            '@api': path.resolve(__dirname, './src/api'),
-            '@containers': path.resolve(__dirname, './src/containers'),
-            '@features': path.resolve(__dirname, './src/features'),
-            '@pages': path.resolve(__dirname, './src/pages'),
-        }
+  plugins: [plugin()],
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@providers": path.resolve(__dirname, "./src/providers"),
+      "@authens": path.resolve(__dirname, "./src/pages/authens"),
+      "@components": path.resolve(__dirname, "./src/components"),
+      "@containers": path.resolve(__dirname, "./src/containers"),
+      "@features": path.resolve(__dirname, "./src/features"),
+      "@pages": path.resolve(__dirname, "./src/pages"),
     },
-    server: {
-        proxy: {
-            '^/weatherforecast': {
-                target: 'http://localhost:5128',
-                secure: false
-            }
-            ,
-            '^/api': {
-                target: 'http://localhost:5128',
-                secure: false
-            }
-        },
-        port: 5173,
-        https: {
-            key: fs.readFileSync(keyFilePath),
-            cert: fs.readFileSync(certFilePath),
-        }
-    }
-})
+  },
+  server: {
+    proxy: {
+      "^/weatherforecast": {
+        target,
+        secure: false,
+      },
+      "^/api": {
+        target,
+        secure: false,
+      },
+    },
+    port: 5173,
+    https: {
+      key: fs.readFileSync(keyFilePath),
+      cert: fs.readFileSync(certFilePath),
+    },
+  },
+});

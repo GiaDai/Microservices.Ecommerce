@@ -1,10 +1,12 @@
-﻿using Microservices.Ecommerce.Application.DTOs.Account;
+﻿using System.Security.Claims;
+using Microservices.Ecommerce.Application.DTOs.Account;
 using Microservices.Ecommerce.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Microservices.Ecommerce.WebViteApp.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/account")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -18,6 +20,29 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers
         {
             return Ok(await _accountService.AuthenticateAsync(request, GenerateIPAddress()));
         }
+
+        [Authorize]
+        [HttpGet("me")]
+        public IActionResult GetCurrentUserAsync()
+        {
+            if (HttpContext.User.Identity is ClaimsIdentity identity)
+            {
+                var email = identity.FindFirst(ClaimTypes.Email)?.Value;
+                var name = identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var roles = identity.FindAll(ClaimTypes.Role).Select(x => x.Value);
+                return Ok(new
+                {
+                    Email = email,
+                    Name = name,
+                    Roles = roles
+                });
+            }
+            else
+            {
+                return Unauthorized();
+            }
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync(RegisterRequest request)
         {
