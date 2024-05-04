@@ -30,6 +30,10 @@ const App: React.FC = () => {
             authProvider={authProvider}
             routerProvider={routerProvider}
             notificationProvider={useNotificationProvider}
+            options={{
+              syncWithLocation: true,
+              warnWhenUnsavedChanges: true,
+            }}
             resources={[
               {
                 name: "dashboard",

@@ -38,7 +38,8 @@ export const dataProvider: DataProvider = {
       filters.forEach((filter) => {
         if ("field" in filter && filter.operator === "eq") {
           // Our fake API supports "eq" operator by simply appending the field name and value to the query string.
-          params.append(filter.field, filter.value);
+          // params.append(filter.field, filter.value);
+          params.append("_filter", `${filter.field}:${filter.value}`);
         }
       });
     }
