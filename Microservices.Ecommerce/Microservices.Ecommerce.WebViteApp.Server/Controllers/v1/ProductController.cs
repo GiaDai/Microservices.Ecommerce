@@ -29,8 +29,6 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.v1
             var productsQuery = _context.Products.AsQueryable();
             if (_filter != null && _filter.Any())
             {
-                Console.WriteLine("##########################");
-                Console.WriteLine(_filter.Count());
                 foreach (var filter in _filter)
                 {
                     var filterValues = filter.Split(':');

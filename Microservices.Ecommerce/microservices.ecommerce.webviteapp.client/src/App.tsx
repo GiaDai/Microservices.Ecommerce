@@ -17,7 +17,17 @@ import {
   CatchAllNavigate,
   NavigateToResource,
 } from "@refinedev/react-router-v6";
-import { CreateProduct, CreateProductRange, EditProduct, ListProduct, ShowProduct } from "./pages";
+import { 
+  CreateProduct, 
+  CreateProductRange, 
+  EditProduct, 
+  ListProduct, 
+  ListRole, 
+  ShowProduct,
+  ShowRole,
+  CreateRole,
+  EditRole
+} from "./pages";
 const App: React.FC = () => {
   return (
     <BrowserRouter>
@@ -27,7 +37,7 @@ const App: React.FC = () => {
             dataProvider={dataProvider}
             authProvider={authProvider}
             routerProvider={routerProvider}
-            accessControlProvider={accessControlProvider}
+            // accessControlProvider={accessControlProvider}
             notificationProvider={useNotificationProvider}
             options={{
               syncWithLocation: true,
@@ -45,6 +55,13 @@ const App: React.FC = () => {
                 edit: "/products/:id/edit",
                 show: "/products/:id"
               },
+              {
+                name: "roles",
+                list: "/roles",
+                create: "/roles/create",
+                edit: "/roles/:id/edit",
+                show: "/roles/:id"
+              }
             ]}
           >
             <Routes>
@@ -104,6 +121,12 @@ const App: React.FC = () => {
                     </CanAccess>
                   } />
 
+                </Route>
+                <Route path="/roles">
+                  <Route index element={<ListRole />} />
+                  <Route path="create" element={<CreateRole />} />
+                  <Route path=":id/edit" element={<EditRole />} />
+                  <Route path=":id" element={<ShowRole />} />
                 </Route>
               </Route>
               <Route
