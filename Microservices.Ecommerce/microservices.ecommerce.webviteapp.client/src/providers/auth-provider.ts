@@ -1,5 +1,12 @@
 import { AuthProvider } from "@refinedev/core";
-
+import {jwtDecode} from 'jwt-decode';
+import { JwtTokenDecoded } from "@authens/types";
+interface ResponseRoot {
+  Succeeded: boolean
+  Message: string
+  Errors: any
+  Data: any
+}
 export const authProvider: AuthProvider = {
   check: async () => {
     // When logging in, we'll obtain an access token from our API and store it in the local storage.
@@ -17,7 +24,14 @@ export const authProvider: AuthProvider = {
     });
 
     if (response.status < 200 || response.status > 299) {
-      return null;
+      localStorage.removeItem("access_token");
+      // We're returning success: true to indicate that the logout operation was successful.
+      return { success: true,
+        successNotification: {
+          message: "Login Successful",
+          description: "You have been successfully logged in.",
+        },
+       };
     }
 
     const data = await response.json();
@@ -33,17 +47,28 @@ export const authProvider: AuthProvider = {
       },
     });
 
-    const data = await response.json();
-    if (data.Data.JWToken) {
-      localStorage.setItem("access_token", data.Data.JWToken);
-      return {
-        success: true,
-        redirectTo: "/dashboard",
-      };
+    const data = await response.json() as ResponseRoot;
+    if (data.Succeeded) {
+      if (data.Data.JWToken) {
+        localStorage.setItem("access_token", data.Data.JWToken);
+        return {
+          success: true,
+          successNotification: {
+            message: "Login Successful",
+            description: "You have been successfully logged in.",
+          },
+          redirectTo: "/dashboard",
+        };
+      }
     }
 
     return {
       success: false,
+      error: {
+        name: "Login Failed!",
+        message:
+          data.Message ?? "Invalid email or password",
+      },
     };
   },
   logout: async () => {
@@ -51,8 +76,18 @@ export const authProvider: AuthProvider = {
     // We're returning success: true to indicate that the logout operation was successful.
     return { success: true };
   },
-  onError: async () => {
-    throw new Error("Not implemented");
+  onError: async (error) => {
+    console.error(error);
+    return { error };
   },
+  getPermissions: async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      return [];
+    }
+
+    const decoded: JwtTokenDecoded = jwtDecode(token);
+    return decoded.roles ?? [];
+  }
   // ...
 };

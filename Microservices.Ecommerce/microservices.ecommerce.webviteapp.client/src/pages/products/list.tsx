@@ -39,8 +39,6 @@ export const ListProduct = () => {
           type="primary"
           icon={
             <PlusOutlined
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
             />
           }
         >
@@ -57,8 +55,6 @@ export const ListProduct = () => {
                   prefix={
                     <SearchOutlined
                       className="anticon tertiary"
-                      onPointerEnterCapture={undefined}
-                      onPointerLeaveCapture={undefined}
                     />
                   }
                   suffix={

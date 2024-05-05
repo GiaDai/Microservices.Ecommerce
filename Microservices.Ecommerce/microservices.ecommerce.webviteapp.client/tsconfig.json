@@ -11,6 +11,7 @@
       "@authens/*": ["src/pages/authens/*"],
       "@pages/*": ["src/pages/*"],
       "@components/*": ["src/components/*"],
+      "@routers/*": ["src/routers/*"],
     },
     /* Bundler mode */
     "moduleResolution": "bundler",
