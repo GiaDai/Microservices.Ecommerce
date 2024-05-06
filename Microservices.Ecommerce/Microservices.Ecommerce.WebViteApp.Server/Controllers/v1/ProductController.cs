@@ -10,7 +10,7 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.v1
     // [Authorize]
     [ApiVersion("1.0")]
     [Route("api/products")]
-    public class ProductController : ControllerBase
+    public class ProductController : BaseApiController
     {
         private readonly ApplicationDbContext _context;
         public ProductController(ApplicationDbContext context)
@@ -29,42 +29,9 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.v1
             var productsQuery = _context.Products.AsQueryable();
             if (_filter != null && _filter.Any())
             {
-                foreach (var filter in _filter)
-                {
-                    var filterValues = filter.Split(':');
-                    var filterKey = filterValues[0];
-                    var filterValue = filterValues[1];
-
-                    var productType = typeof(Product); // Assuming 'Product' is your entity class
-                    var propertyInfo = productType.GetProperty(filterKey);
-                    var propertyType = propertyInfo?.PropertyType;
-
-                    if (propertyType != null)
-                    {
-                        if (propertyType == typeof(int) || propertyType == typeof(decimal) || propertyType == typeof(double)) // Add other numeric types if needed
-                        {
-                            int numericFilterValue;
-                            if (int.TryParse(filterValue, out numericFilterValue))
-                            {
-                                productsQuery = productsQuery.Where(p => EF.Property<int>(p, filterKey) == numericFilterValue);
-                            }
-                        }
-                        // datetime
-                        else if (propertyType == typeof(DateTime))
-                        {
-                            DateTime dateFilterValue;
-                            if (DateTime.TryParse(filterValue, out dateFilterValue))
-                            {
-                                productsQuery = productsQuery.Where(p => EF.Property<DateTime>(p, filterKey) == dateFilterValue);
-                            }
-                        }
-                        else if (propertyType == typeof(string))
-                        {
-                            productsQuery = productsQuery.Where(p => EF.Property<string>(p, filterKey).Contains(filterValue));
-                        }
-                    }
-                }
+                productsQuery = ApplyFilters(productsQuery, _filter);
             }
+
             var products = await productsQuery
             .Skip(_start).Take(_end - _start)
             .OrderByDynamic(_sort, _order)

@@ -1,28 +1,35 @@
 import { AccessControlProvider } from "@refinedev/core";
 import { authProvider } from "./auth-provider";
-
+import { Roles } from "./types";
 
 export const accessControlProvider: AccessControlProvider = {
-    can: async ({ resource, action, params }) => {
-        if (!authProvider || typeof authProvider.getPermissions !== 'function') {
-            return {
-                can: false,
-                reason: 'AuthProvider or getPermissions is undefined',
-            }
-        }
-        const permissions = await authProvider.getPermissions() as string[];
-        
-        if (permissions && permissions.includes('Basic') && resource === 'dashboard') {
-            return { can: true }
-        }
+  can: async ({ resource, action }) => {
+    if (!authProvider || typeof authProvider.getPermissions !== "function") {
+      return {
+        can: false,
+        reason: "AuthProvider or getPermissions is undefined",
+      };
+    }
+    const roles = JSON.parse(
+      (await authProvider.getPermissions()) as string
+    ) as Roles;
 
-        if (permissions && permissions.includes('SuperAdmin') && resource === 'products' && ['list', 'create', 'edit', 'show','create-range'].includes(action)) {
-            return { can: true }
-        }
+    const { role, permissions } = roles;
 
-        return {
-            can: false,
-            reason: "Unauthorized",
-        };
-    },
+    if (role === "SuperAdmin") return { can: true };
+
+    for (const permission of permissions) {
+      if (
+        permission.resource === resource &&
+        permission.action.includes(action)
+      ) {
+        return { can: true };
+      }
+    }
+
+    return {
+      can: false,
+      reason: "Unauthorized",
+    };
+  },
 };

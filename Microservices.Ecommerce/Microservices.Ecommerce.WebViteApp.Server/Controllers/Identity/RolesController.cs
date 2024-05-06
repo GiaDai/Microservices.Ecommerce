@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microservices.Ecommerce.Infrastructure.Identity.Contexts;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.Identity
 {
@@ -7,82 +10,34 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.Identity
     [ApiController]
     public class RolesController : ControllerBase
     {
-        private readonly RoleManager<IdentityRole> _roleManager;
-
-        public RolesController(RoleManager<IdentityRole> roleManager)
+        private readonly IdentityContext _context;
+        public RolesController(IdentityContext context)
         {
-            _roleManager = roleManager;
+            _context = context;
         }
 
         //GET: api/roles?_start=0&_end=10&_order=asc&_sort=Id
         [HttpGet]
-        public IActionResult Get([FromQuery] int _start = 0,
+        public async Task<IActionResult> Get(
+            [FromQuery] List<string>? id,
+            [FromQuery] int _start = 0,
             [FromQuery] int _end = 10,
             [FromQuery] string _order = "asc",
-            [FromQuery] string _sort = "Id")
+            [FromQuery] string _sort = "Id",
+            [FromQuery] List<string>? _filter = null)
         {
-            var roles = _roleManager.Roles;
-            var total = roles.Count();
-            Response.Headers.Add("X-Total-Count", total.ToString());
+            if (id != null && id.Count > 0)
+            {
+                var rolesFilter = await _context.Roles.Where(x => id.Contains(x.Id)).ToListAsync();
+                return Ok(rolesFilter);
+            }
+            var roles = await _context.Roles
+            .Skip(_start).Take(_end - _start)
+            .OrderByDynamic(_sort, _order)
+            .ToListAsync();
+            var count = await _context.Roles.CountAsync();
+            Response.Headers.Add("X-Total-Count", count.ToString());
             return Ok(roles);
-        }
-
-        //GET: api/roles/show/5
-        [HttpGet("show/{id}")]
-        public async Task<IActionResult> Show(string id)
-        {
-            var role = await _roleManager.FindByIdAsync(id);
-            if (role == null)
-            {
-                return NotFound();
-            }
-            return Ok(role);
-        }
-
-        //POST: api/roles
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody] IdentityRole role)
-        {
-            var result = await _roleManager.CreateAsync(role);
-            if (result.Succeeded)
-            {
-                return Ok(role);
-            }
-            return BadRequest(result.Errors);
-        }
-
-        //PUT: api/roles/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(string id, [FromBody] IdentityRole role)
-        {
-            if (id != role.Id)
-            {
-                return BadRequest();
-            }
-
-            var result = await _roleManager.UpdateAsync(role);
-            if (result.Succeeded)
-            {
-                return Ok(role);
-            }
-            return BadRequest(result.Errors);
-        }
-
-        //DELETE: api/roles/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
-        {
-            var role = await _roleManager.FindByIdAsync(id);
-            if (role == null)
-            {
-                return NotFound();
-            }
-            var result = await _roleManager.DeleteAsync(role);
-            if (result.Succeeded)
-            {
-                return Ok(role);
-            }
-            return BadRequest(result.Errors);
         }
     }
 }

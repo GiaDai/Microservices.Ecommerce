@@ -1,11 +1,11 @@
 import { AuthProvider } from "@refinedev/core";
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 import { JwtTokenDecoded } from "@authens/types";
 interface ResponseRoot {
-  Succeeded: boolean
-  Message: string
-  Errors: any
-  Data: any
+  Succeeded: boolean;
+  Message: string;
+  Errors: any;
+  Data: any;
 }
 export const authProvider: AuthProvider = {
   check: async () => {
@@ -26,12 +26,13 @@ export const authProvider: AuthProvider = {
     if (response.status < 200 || response.status > 299) {
       localStorage.removeItem("access_token");
       // We're returning success: true to indicate that the logout operation was successful.
-      return { success: true,
+      return {
+        success: true,
         successNotification: {
           message: "Login Successful",
           description: "You have been successfully logged in.",
         },
-       };
+      };
     }
 
     const data = await response.json();
@@ -47,7 +48,7 @@ export const authProvider: AuthProvider = {
       },
     });
 
-    const data = await response.json() as ResponseRoot;
+    const data = (await response.json()) as ResponseRoot;
     if (data.Succeeded) {
       if (data.Data.JWToken) {
         localStorage.setItem("access_token", data.Data.JWToken);
@@ -66,8 +67,7 @@ export const authProvider: AuthProvider = {
       success: false,
       error: {
         name: "Login Failed!",
-        message:
-          data.Message ?? "Invalid email or password",
+        message: data.Message ?? "Invalid email or password",
       },
     };
   },
@@ -87,7 +87,7 @@ export const authProvider: AuthProvider = {
     }
 
     const decoded: JwtTokenDecoded = jwtDecode(token);
-    return decoded.roles ?? [];
-  }
+    return decoded.roles ?? "";
+  },
   // ...
 };

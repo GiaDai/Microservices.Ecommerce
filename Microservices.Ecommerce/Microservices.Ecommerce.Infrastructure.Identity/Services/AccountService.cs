@@ -5,6 +5,7 @@ using Microservices.Ecommerce.Application.Exceptions;
 using Microservices.Ecommerce.Application.Interfaces;
 using Microservices.Ecommerce.Application.Wrappers;
 using Microservices.Ecommerce.Domain.Settings;
+using Microservices.Ecommerce.Infrastructure.Identity.Contexts;
 using Microservices.Ecommerce.Infrastructure.Identity.Helpers;
 using Microservices.Ecommerce.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Org.BouncyCastle.Ocsp;
 using System;
 using System.Collections.Generic;
@@ -35,11 +37,13 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Services
         private readonly IEmailService _emailService;
         private readonly JWTSettings _jwtSettings;
         private readonly IDateTimeService _dateTimeService;
+        private readonly IdentityContext _context;
         public AccountService(UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             IOptions<JWTSettings> jwtSettings,
             IDateTimeService dateTimeService,
             SignInManager<ApplicationUser> signInManager,
+            IdentityContext context,
             IEmailService emailService)
         {
             _userManager = userManager;
@@ -47,6 +51,7 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Services
             _jwtSettings = jwtSettings.Value;
             _dateTimeService = dateTimeService;
             _signInManager = signInManager;
+            _context = context;
             this._emailService = emailService;
         }
 
@@ -113,24 +118,53 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Services
             }
             else
             {
-                throw new ApiException($"Email {request.Email } is already registered.");
+                throw new ApiException($"Email {request.Email} is already registered.");
             }
+        }
+
+        class RolePermission
+        {
+            public string resource { get; set; }
+            public string[] action { get; set; }
+        }
+
+        private async Task<string> GetPermissionOfRole(string roleName)
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+            var roleClaimsForRole = _context.RoleClaims.Where(rc => rc.RoleId == role.Id).ToList();
+            List<RolePermission> rolePermissions = new List<RolePermission>();
+            foreach (var item in roleClaimsForRole)
+            {
+                rolePermissions.Add(new RolePermission
+                {
+                    resource = item.ClaimType,
+                    action = item.ClaimValue.Split("#")
+                });
+            }
+
+            return JsonConvert.SerializeObject(
+            new
+            {
+                role = roleName,
+                permissions = rolePermissions
+
+            });
         }
 
         private async Task<JwtSecurityToken> GenerateJWToken(ApplicationUser user)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
-        
+
             var roleClaims = new List<Claim>();
-        
+
             for (int i = 0; i < roles.Count; i++)
             {
-                roleClaims.Add(new Claim("roles", roles[i]));
+                roleClaims.Add(new Claim("roles", await GetPermissionOfRole(roles[i].ToString())));
             }
-        
+
             string ipAddress = IpHelper.GetIpAddress();
-        
+
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
@@ -141,7 +175,7 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Services
             }
             .Union(userClaims)
             .Union(roleClaims);
-        
+
             SigningCredentials signingCredentials;
             if (File.Exists(_jwtSettings.PrivatekeyPath))
             {
@@ -154,10 +188,10 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Services
                 var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
                 signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
             }
-        
+
             return GenerateJwtSecurityToken(claims, signingCredentials);
         }
-        
+
         private JwtSecurityToken GenerateJwtSecurityToken(IEnumerable<Claim> claims, SigningCredentials signingCredentials)
         {
             return new JwtSecurityToken(
@@ -174,7 +208,7 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Services
             string xmlKey = File.ReadAllText(_jwtSettings.PrivatekeyPath);
             rsaKey.FromXmlString(xmlKey);
             var rsaSecurityKey = new RsaSecurityKey(rsaKey);
-           
+
             return rsaSecurityKey;
         }
 

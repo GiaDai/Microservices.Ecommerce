@@ -10,10 +10,10 @@ import {
 } from "@refinedev/antd";
 import { Table, Space, Input, Form, Spin, Button } from "antd";
 import { Product } from "./types";
-import { getDefaultFilter, useNavigation } from "@refinedev/core";
+import { getDefaultFilter, useNavigation, useCan } from "@refinedev/core";
 import { PaginationTotal } from "@components/index";
 import debounce from "lodash/debounce";
-import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
+import { SearchOutlined, StarOutlined } from "@ant-design/icons";
 export const ListProduct = () => {
   const { tableProps, searchFormProps, sorters, filters, tableQueryResult } =
     useTable<Product>({
@@ -29,16 +29,23 @@ export const ListProduct = () => {
   };
   const debouncedOnChange = debounce(onSearch, 500);
   const { create } = useNavigation();
+  const { data: canCreate } = useCan({
+    resource: "products",
+    action: "create",
+  });
   return (
     <List
       title={
         <Button
+          hidden={!canCreate?.can}
           onClick={() => {
             create("products");
           }}
           type="primary"
           icon={
-            <PlusOutlined
+            <StarOutlined
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
             />
           }
         >
@@ -55,6 +62,8 @@ export const ListProduct = () => {
                   prefix={
                     <SearchOutlined
                       className="anticon tertiary"
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
                     />
                   }
                   suffix={

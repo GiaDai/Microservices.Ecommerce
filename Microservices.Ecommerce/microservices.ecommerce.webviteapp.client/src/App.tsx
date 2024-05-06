@@ -10,24 +10,34 @@ import { Refine, Authenticated, CanAccess } from "@refinedev/core";
 import { ConfigProvider, App as AntdApp } from "antd";
 import React from "react";
 import routerProvider from "@refinedev/react-router-v6";
-import { dataProvider, authProvider, accessControlProvider } from "@providers/index";
+import {
+  dataProvider,
+  authProvider,
+  accessControlProvider,
+} from "@providers/index";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
-import { Header } from "@components/index";
+import { Header, Unauthorized } from "@components/index";
 import {
   CatchAllNavigate,
   NavigateToResource,
 } from "@refinedev/react-router-v6";
-import { 
-  CreateProduct, 
-  CreateProductRange, 
-  EditProduct, 
-  ListProduct, 
-  ListRole, 
+import {
+  CreateProduct,
+  CreateProductRange,
+  EditProduct,
+  ListProduct,
+  ListRole,
   ShowProduct,
   ShowRole,
   CreateRole,
-  EditRole
+  EditRole,
 } from "./pages";
+import {
+  CreateRoleClaim,
+  EditRoleClaim,
+  ListRoleClaim,
+  ShowRoleClaim,
+} from "@pages/roleclaims";
 const App: React.FC = () => {
   return (
     <BrowserRouter>
@@ -37,7 +47,7 @@ const App: React.FC = () => {
             dataProvider={dataProvider}
             authProvider={authProvider}
             routerProvider={routerProvider}
-            // accessControlProvider={accessControlProvider}
+            accessControlProvider={accessControlProvider}
             notificationProvider={useNotificationProvider}
             options={{
               syncWithLocation: true,
@@ -53,15 +63,22 @@ const App: React.FC = () => {
                 list: "/products",
                 create: "/products/create",
                 edit: "/products/:id/edit",
-                show: "/products/:id"
+                show: "/products/:id",
               },
               {
                 name: "roles",
                 list: "/roles",
                 create: "/roles/create",
                 edit: "/roles/:id/edit",
-                show: "/roles/:id"
-              }
+                show: "/roles/:id",
+              },
+              {
+                name: "roleclaims",
+                list: "/roleclaims",
+                create: "/roleclaims/create",
+                edit: "/roleclaims/:id/edit",
+                show: "/roleclaims/:id",
+              },
             ]}
           >
             <Routes>
@@ -86,47 +103,180 @@ const App: React.FC = () => {
                   element={<NavigateToResource resource="dashboard" />}
                 />
                 <Route path="/dashboard">
-                  <Route index element={<h1>Dashboard</h1>} />
+                  <Route
+                    index
+                    element={
+                      <CanAccess
+                        resource="dashboard"
+                        action="list"
+                        fallback={<Unauthorized />}
+                      >
+                        <h1>Dashboard</h1>
+                      </CanAccess>
+                    }
+                  />
                 </Route>
                 <Route path="/products">
-                  <Route index element={
-                    <CanAccess
-                      resource="products"
-                      action="list"
-                      fallback={<div>Unauthorized!</div>}
-                    >
-                      <ListProduct />
-                    </CanAccess>
-                  } />
-                  <Route path="create" element={
-                    <CanAccess
-                      resource="products"
-                      action="create"
-                      fallback={<div>Unauthorized!</div>}
-                    >
-                      <CreateProduct />
-                    </CanAccess>
-                  }
+                  <Route
+                    index
+                    element={
+                      <CanAccess
+                        resource="products"
+                        action="list"
+                        fallback={<Unauthorized />}
+                      >
+                        <ListProduct />
+                      </CanAccess>
+                    }
                   />
-                  <Route path=":id" element={<ShowProduct />} />
-                  <Route path=":id/edit" element={<EditProduct />} />
-
-                  <Route path="create-range" element={
-                    <CanAccess
-                      resource="products"
-                      action="create-range"
-                      fallback={<div>Unauthorized!</div>}
-                    >
-                      <CreateProductRange />
-                    </CanAccess>
-                  } />
-
+                  <Route
+                    path="create"
+                    element={
+                      <CanAccess
+                        resource="products"
+                        action="create"
+                        fallback={<Unauthorized />}
+                      >
+                        <CreateProduct />
+                      </CanAccess>
+                    }
+                  />
+                  <Route
+                    path=":id"
+                    element={
+                      <CanAccess
+                        resource="products"
+                        action="show"
+                        fallback={<Unauthorized />}
+                      >
+                        <ShowProduct />
+                      </CanAccess>
+                    }
+                  />
+                  <Route
+                    path=":id/edit"
+                    element={
+                      <CanAccess
+                        resource="products"
+                        action="show"
+                        fallback={<Unauthorized />}
+                      >
+                        <EditProduct />
+                      </CanAccess>
+                    }
+                  />
+                  <Route
+                    path="create-range"
+                    element={
+                      <CanAccess
+                        resource="products"
+                        action="create-range"
+                        fallback={<Unauthorized />}
+                      >
+                        <CreateProductRange />
+                      </CanAccess>
+                    }
+                  />
                 </Route>
                 <Route path="/roles">
-                  <Route index element={<ListRole />} />
-                  <Route path="create" element={<CreateRole />} />
-                  <Route path=":id/edit" element={<EditRole />} />
-                  <Route path=":id" element={<ShowRole />} />
+                  <Route
+                    index
+                    element={
+                      <CanAccess
+                        resource="roles"
+                        action="list"
+                        fallback={<Unauthorized />}
+                      >
+                        <ListRole />
+                      </CanAccess>
+                    }
+                  />
+                  <Route
+                    path="create"
+                    element={
+                      <CanAccess
+                        resource="roles"
+                        action="create"
+                        fallback={<Unauthorized />}
+                      >
+                        <CreateRole />
+                      </CanAccess>
+                    }
+                  />
+                  <Route
+                    path=":id/edit"
+                    element={
+                      <CanAccess
+                        resource="roles"
+                        action="edit"
+                        fallback={<Unauthorized />}
+                      >
+                        <EditRole />
+                      </CanAccess>
+                    }
+                  />
+                  <Route
+                    path=":id"
+                    element={
+                      <CanAccess
+                        resource="roles"
+                        action="show"
+                        fallback={<Unauthorized />}
+                      >
+                        <ShowRole />
+                      </CanAccess>
+                    }
+                  />
+                </Route>
+                <Route path="/roleclaims">
+                  <Route
+                    index
+                    element={
+                      <CanAccess
+                        resource="roleclaims"
+                        action="list"
+                        fallback={<Unauthorized />}
+                      >
+                        <ListRoleClaim />
+                      </CanAccess>
+                    }
+                  />
+                  <Route
+                    path="create"
+                    element={
+                      <CanAccess
+                        resource="roleclaims"
+                        action="list"
+                        fallback={<Unauthorized />}
+                      >
+                        <CreateRoleClaim />
+                      </CanAccess>
+                    }
+                  />
+                  <Route
+                    path=":id/edit"
+                    element={
+                      <CanAccess
+                        resource="roleclaims"
+                        action="list"
+                        fallback={<Unauthorized />}
+                      >
+                        <EditRoleClaim />
+                      </CanAccess>
+                    }
+                  />
+                  <Route
+                    path=":id"
+                    element={
+                      <CanAccess
+                        resource="roleclaims"
+                        action="list"
+                        fallback={<Unauthorized />}
+                      >
+                        <ShowRoleClaim />
+                      </CanAccess>
+                    }
+                  />
                 </Route>
               </Route>
               <Route
