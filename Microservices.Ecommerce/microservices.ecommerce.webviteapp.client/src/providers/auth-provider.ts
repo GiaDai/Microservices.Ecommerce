@@ -89,5 +89,34 @@ export const authProvider: AuthProvider = {
     const decoded: JwtTokenDecoded = jwtDecode(token);
     return decoded.roles ?? "";
   },
+  updatePassword: async ({ oldPassword, newPassword }) => {
+    const response = await fetch("/api/account/update-password", {
+      method: "POST",
+      body: JSON.stringify({ oldPassword, newPassword }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("access_token") ?? ""}`,
+      },
+    });
+
+    const data = (await response.json()) as ResponseRoot;
+    if (data.Succeeded) {
+      return {
+        success: true,
+        successNotification: {
+          message: "Password Updated",
+          description: "Your password has been successfully updated.",
+        },
+        redirectTo: "/dashboard",
+      };
+    }
+    return {
+      success: false,
+      error: {
+        name: "Login Failed!",
+        message: data.Message ?? "Invalid email or password",
+      },
+    };
+  },
   // ...
 };

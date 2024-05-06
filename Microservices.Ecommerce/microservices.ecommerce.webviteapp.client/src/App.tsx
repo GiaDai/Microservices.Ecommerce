@@ -2,10 +2,12 @@ import "@refinedev/antd/dist/reset.css";
 import {
   AuthPage,
   ErrorComponent,
+  ImageField,
   ThemedLayoutV2,
   ThemedTitleV2,
   useNotificationProvider,
 } from "@refinedev/antd";
+import { SmileOutlined } from "@ant-design/icons";
 import { Refine, Authenticated, CanAccess } from "@refinedev/core";
 import { ConfigProvider, App as AntdApp } from "antd";
 import React from "react";
@@ -38,6 +40,7 @@ import {
   ListRoleClaim,
   ShowRoleClaim,
 } from "@pages/roleclaims";
+
 const App: React.FC = () => {
   return (
     <BrowserRouter>
@@ -90,7 +93,16 @@ const App: React.FC = () => {
                   >
                     <ThemedLayoutV2
                       Title={({ collapsed }: any) => (
-                        <ThemedTitleV2 collapsed={collapsed} text="Hello" />
+                        <ThemedTitleV2
+                          collapsed={collapsed}
+                          icon={
+                            <ImageField
+                              value="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
+                              title="Logo of GiaDai"
+                            />
+                          }
+                          text="Ant Design Pro"
+                        />
                       )}
                     >
                       <Outlet />
@@ -304,6 +316,26 @@ const App: React.FC = () => {
                   }
                 />
               </Route>
+              <Route
+                path="/change-password"
+                element={
+                  <AuthPage
+                    type="updatePassword"
+                    title={
+                      <ThemedTitleV2
+                        collapsed={false}
+                        icon={
+                          <SmileOutlined
+                            onPointerEnterCapture={undefined}
+                            onPointerLeaveCapture={undefined}
+                          />
+                        }
+                        text="Change password"
+                      />
+                    }
+                  />
+                }
+              />
               <Route
                 element={
                   <Authenticated key="catch-all">
