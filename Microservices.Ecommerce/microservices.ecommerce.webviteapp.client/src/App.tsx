@@ -3,7 +3,9 @@ import {
   AuthPage,
   ErrorComponent,
   ImageField,
+  ThemedHeaderV2,
   ThemedLayoutV2,
+  ThemedSiderV2,
   ThemedTitleV2,
   useNotificationProvider,
 } from "@refinedev/antd";
@@ -92,6 +94,8 @@ const App: React.FC = () => {
                     fallback={<CatchAllNavigate to="/login" />}
                   >
                     <ThemedLayoutV2
+                      // Sider={() => <ThemedSiderV2 fixed />}
+                      Header={() => <ThemedHeaderV2 sticky />}
                       Title={({ collapsed }: any) => (
                         <ThemedTitleV2
                           collapsed={collapsed}

@@ -4,6 +4,7 @@ import {
   FilterDropdown,
   List,
   ShowButton,
+  TagField,
   useSelect,
   useTable,
 } from "@refinedev/antd";
@@ -56,7 +57,18 @@ export const ListRoleClaim = () => {
           defaultFilteredValue={getDefaultFilter("RoleId", filters, "eq")}
         />
         <Table.Column dataIndex="ClaimType" title="ClaimType" />
-        <Table.Column dataIndex="ClaimValue" title="ClaimValue" />
+        <Table.Column dataIndex="ClaimValue" title="ClaimValue"
+          render={(value: string) => (
+            <>
+              {value.split("#").map((claim, index) => (
+                <TagField
+                  key={index}
+                  value={claim}
+                />
+              ))}
+            </>
+          )}
+        />
         <Table.Column
           title="Actions"
           render={(_, record: RoleClaim) => (
