@@ -39,5 +39,17 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.Identity
             Response.Headers.Add("X-Total-Count", count.ToString());
             return Ok(roles);
         }
+
+        // GET: api/roles/show/5
+        [HttpGet("show/{id}")]
+        public async Task<IActionResult> Get(string id)
+        {
+            var role = await _context.Roles.FindAsync(id);
+            if (role == null)
+            {
+                return NotFound();
+            }
+            return Ok(role);
+        }
     }
 }

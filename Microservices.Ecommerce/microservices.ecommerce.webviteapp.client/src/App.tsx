@@ -3,9 +3,7 @@ import {
   AuthPage,
   ErrorComponent,
   ImageField,
-  ThemedHeaderV2,
   ThemedLayoutV2,
-  ThemedSiderV2,
   ThemedTitleV2,
   useNotificationProvider,
 } from "@refinedev/antd";
@@ -35,8 +33,10 @@ import {
   ShowRole,
   CreateRole,
   EditRole,
+  CloneRole,
 } from "./pages";
 import {
+  CloneRoleClaim,
   CreateRoleClaim,
   EditRoleClaim,
   ListRoleClaim,
@@ -71,18 +71,34 @@ const App: React.FC = () => {
                 show: "/products/:id",
               },
               {
+                name: "identity",
+                meta: {
+                  label: "Identity",
+                },
+              },
+              {
                 name: "roles",
-                list: "/roles",
-                create: "/roles/create",
-                edit: "/roles/:id/edit",
-                show: "/roles/:id",
+                list: "/identity/roles",
+                create: "/identity/roles/create",
+                clone: "/identity/roles/:id/clone",
+                edit: "/identity/roles/:id/edit",
+                show: "/identity/roles/:id",
+                meta: {
+                  canDelete: true,
+                  parent: "identity",
+                },
               },
               {
                 name: "roleclaims",
-                list: "/roleclaims",
-                create: "/roleclaims/create",
-                edit: "/roleclaims/:id/edit",
-                show: "/roleclaims/:id",
+                list: "/identity/roleclaims",
+                create: "/identity/roleclaims/create",
+                clone: "/identity/roleclaims/:id/clone",
+                edit: "/identity/roleclaims/:id/edit",
+                show: "/identity/roleclaims/:id",
+                meta: {
+                  canDelete: true,
+                  parent: "identity",
+                },
               },
             ]}
           >
@@ -95,7 +111,7 @@ const App: React.FC = () => {
                   >
                     <ThemedLayoutV2
                       // Sider={() => <ThemedSiderV2 fixed />}
-                      Header={() => <ThemedHeaderV2 sticky />}
+                      Header={() => <Header />}
                       Title={({ collapsed }: any) => (
                         <ThemedTitleV2
                           collapsed={collapsed}
@@ -194,9 +210,9 @@ const App: React.FC = () => {
                     }
                   />
                 </Route>
-                <Route path="/roles">
+                <Route path="/identity" element={<Outlet />}>
                   <Route
-                    index
+                    path="roles"
                     element={
                       <CanAccess
                         resource="roles"
@@ -206,47 +222,58 @@ const App: React.FC = () => {
                         <ListRole />
                       </CanAccess>
                     }
-                  />
+                  >
+                    <Route
+                      path="create"
+                      element={
+                        <CanAccess
+                          resource="roles"
+                          action="create"
+                          fallback={<Unauthorized />}
+                        >
+                          <CreateRole />
+                        </CanAccess>
+                      }
+                    />
+                    <Route
+                      path=":id/clone"
+                      element={
+                        <CanAccess
+                          resource="roles"
+                          action="clone"
+                          fallback={<Unauthorized />}
+                        >
+                          <CloneRole />
+                        </CanAccess>
+                      }
+                    />
+                    <Route
+                      path=":id/edit"
+                      element={
+                        <CanAccess
+                          resource="roles"
+                          action="edit"
+                          fallback={<Unauthorized />}
+                        >
+                          <EditRole />
+                        </CanAccess>
+                      }
+                    />
+                    <Route
+                      path=":id"
+                      element={
+                        <CanAccess
+                          resource="roles"
+                          action="show"
+                          fallback={<Unauthorized />}
+                        >
+                          <ShowRole />
+                        </CanAccess>
+                      }
+                    />
+                  </Route>
                   <Route
-                    path="create"
-                    element={
-                      <CanAccess
-                        resource="roles"
-                        action="create"
-                        fallback={<Unauthorized />}
-                      >
-                        <CreateRole />
-                      </CanAccess>
-                    }
-                  />
-                  <Route
-                    path=":id/edit"
-                    element={
-                      <CanAccess
-                        resource="roles"
-                        action="edit"
-                        fallback={<Unauthorized />}
-                      >
-                        <EditRole />
-                      </CanAccess>
-                    }
-                  />
-                  <Route
-                    path=":id"
-                    element={
-                      <CanAccess
-                        resource="roles"
-                        action="show"
-                        fallback={<Unauthorized />}
-                      >
-                        <ShowRole />
-                      </CanAccess>
-                    }
-                  />
-                </Route>
-                <Route path="/roleclaims">
-                  <Route
-                    index
+                    path="roleclaims"
                     element={
                       <CanAccess
                         resource="roleclaims"
@@ -256,43 +283,45 @@ const App: React.FC = () => {
                         <ListRoleClaim />
                       </CanAccess>
                     }
-                  />
-                  <Route
-                    path="create"
-                    element={
-                      <CanAccess
-                        resource="roleclaims"
-                        action="list"
-                        fallback={<Unauthorized />}
-                      >
-                        <CreateRoleClaim />
-                      </CanAccess>
-                    }
-                  />
-                  <Route
-                    path=":id/edit"
-                    element={
-                      <CanAccess
-                        resource="roleclaims"
-                        action="list"
-                        fallback={<Unauthorized />}
-                      >
-                        <EditRoleClaim />
-                      </CanAccess>
-                    }
-                  />
-                  <Route
-                    path=":id"
-                    element={
-                      <CanAccess
-                        resource="roleclaims"
-                        action="list"
-                        fallback={<Unauthorized />}
-                      >
-                        <ShowRoleClaim />
-                      </CanAccess>
-                    }
-                  />
+                  >
+                    <Route
+                      path="create"
+                      element={
+                        <CanAccess
+                          resource="roleclaims"
+                          action="list"
+                          fallback={<Unauthorized />}
+                        >
+                          <CreateRoleClaim />
+                        </CanAccess>
+                      }
+                    />
+                    <Route path=":id/clone" element={<CloneRoleClaim />} />
+                    <Route
+                      path=":id/edit"
+                      element={
+                        <CanAccess
+                          resource="roleclaims"
+                          action="list"
+                          fallback={<Unauthorized />}
+                        >
+                          <EditRoleClaim />
+                        </CanAccess>
+                      }
+                    />
+                    <Route
+                      path=":id"
+                      element={
+                        <CanAccess
+                          resource="roleclaims"
+                          action="list"
+                          fallback={<Unauthorized />}
+                        >
+                          <ShowRoleClaim />
+                        </CanAccess>
+                      }
+                    />
+                  </Route>
                 </Route>
               </Route>
               <Route

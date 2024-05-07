@@ -86,7 +86,7 @@ export const dataProvider: DataProvider = {
     });
     if (response.status < 200 || response.status > 299) throw response;
     const data = await response.json();
-    return { data };
+    return { data, redirect: "/roleclaims" };
   },
   update: async ({ resource, id, variables }) => {
     const response = await fetcher(`${API_URL}/${resource}/${id}`, {

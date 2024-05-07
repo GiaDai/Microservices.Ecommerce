@@ -170,6 +170,7 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Services
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("fullname", user.FirstName + " " + user.LastName),
                 new Claim("uid", user.Id),
                 new Claim("ip", ipAddress)
             }

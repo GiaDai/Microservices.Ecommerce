@@ -29,12 +29,16 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers
             {
                 var email = identity.FindFirst(ClaimTypes.Email)?.Value;
                 var name = identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var fullname = identity.FindFirst("fullname")?.Value;
                 var roles = identity.FindAll(ClaimTypes.Role).Select(x => x.Value);
+                var uid = identity.FindFirst("uid")?.Value;
                 return Ok(new
                 {
                     email,
                     name,
-                    roles
+                    fullname,
+                    roles,
+                    uid
                 });
             }
             else

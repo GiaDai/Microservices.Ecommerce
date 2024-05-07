@@ -12,6 +12,7 @@
       "@pages/*": ["src/pages/*"],
       "@components/*": ["src/components/*"],
       "@routers/*": ["src/routers/*"],
+      "@utilities/*": ["src/utilities/*"],
     },
     /* Bundler mode */
     "moduleResolution": "bundler",

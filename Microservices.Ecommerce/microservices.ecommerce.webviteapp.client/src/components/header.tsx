@@ -1,25 +1,26 @@
-import { useLogout, useGetIdentity } from "@refinedev/core";
+import { Layout, Space, theme } from "antd";
+import { CurrentUser } from "./current-user";
+const { useToken } = theme;
 
 export const Header = () => {
-  const { mutate, isLoading } = useLogout();
-  const { data: identity } = useGetIdentity();
-  const handleClick = () => {
-    mutate();
-  };
-
-  type Identity = {
-    name?: string;
+  const { token } = useToken();
+  const headerStyles: React.CSSProperties = {
+    backgroundColor: token.colorBgElevated,
+    display: "flex",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    padding: "0px 24px",
+    height: "64px",
+    position: "sticky",
+    top: 0,
+    zIndex: 999,
   };
 
   return (
-    <>
-      <h2>
-        <span>Welcome, </span>
-        <span>{(identity as Identity)?.name ?? ""}</span>
-      </h2>
-      <button type="button" disabled={isLoading} onClick={handleClick}>
-        Logout
-      </button>
-    </>
+    <Layout.Header style={headerStyles}>
+      <Space align="center" size="middle">
+        <CurrentUser />
+      </Space>
+    </Layout.Header>
   );
 };

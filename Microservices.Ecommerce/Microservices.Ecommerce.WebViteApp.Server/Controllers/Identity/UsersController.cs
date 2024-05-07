@@ -41,5 +41,37 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.Identity
             Response.Headers.Add("X-Total-Count", count.ToString());
             return Ok(users);
         }
+
+        // GET: api/users/show/5
+        [HttpGet("show/{id}")]
+        public async Task<IActionResult> Show(string id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
+
+        // PUT: api/users/update/5
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> Update(string id, ApplicationUser user)
+        {
+            if (id != user.Id)
+            {
+                return BadRequest();
+            }
+            _context.Entry(user).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return NoContent();
+        }
     }
 }

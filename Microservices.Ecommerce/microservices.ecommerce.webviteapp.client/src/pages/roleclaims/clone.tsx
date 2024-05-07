@@ -1,10 +1,11 @@
 import { AutoSaveIndicator } from "@refinedev/core";
-import { useForm, Edit, useSelect } from "@refinedev/antd";
+import { useForm, useSelect, Create } from "@refinedev/antd";
 import { RoleClaim } from "./types";
 import { Form, Input, Select } from "antd";
-export const EditRoleClaim = () => {
+
+export const CloneRoleClaim = () => {
   const { formProps, saveButtonProps, autoSaveProps } = useForm<RoleClaim>({
-    redirect: "show",
+    redirect: "list",
   });
 
   const { selectProps } = useSelect({
@@ -12,14 +13,14 @@ export const EditRoleClaim = () => {
     optionLabel: "Name",
     optionValue: "Id",
   });
-
   return (
-    <Edit saveButtonProps={{ ...saveButtonProps }}>
+    <Create
+      resource="roleclaims"
+      title="Clone Role Claim"
+      saveButtonProps={saveButtonProps}
+    >
       <AutoSaveIndicator {...autoSaveProps} />
       <Form {...formProps} layout="vertical">
-        <Form.Item label="ID" name="Id" hidden>
-          <Input />
-        </Form.Item>
         <Form.Item label="RoleId" name="RoleId">
           <Select {...selectProps} />
         </Form.Item>
@@ -38,6 +39,6 @@ export const EditRoleClaim = () => {
           <Input />
         </Form.Item>
       </Form>
-    </Edit>
+    </Create>
   );
 };

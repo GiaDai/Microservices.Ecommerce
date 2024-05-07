@@ -7,6 +7,7 @@ import {
   TagField,
   useSelect,
   useTable,
+  CloneButton,
 } from "@refinedev/antd";
 import { RoleClaim } from "./types";
 import { Select, Space, Table } from "antd";
@@ -34,8 +35,8 @@ export const ListRoleClaim = () => {
   return (
     <List>
       <Table {...tableProps} rowKey="Id">
-        <Table.Column dataIndex="Id" title="ID" />
-        <Table.Column
+        <Table.Column<RoleClaim> dataIndex="Id" title="ID" />
+        <Table.Column<RoleClaim>
           dataIndex="RoleId"
           title="Role"
           render={(value) => {
@@ -56,27 +57,38 @@ export const ListRoleClaim = () => {
           )}
           defaultFilteredValue={getDefaultFilter("RoleId", filters, "eq")}
         />
-        <Table.Column dataIndex="ClaimType" title="ClaimType" />
-        <Table.Column dataIndex="ClaimValue" title="ClaimValue"
+        <Table.Column<RoleClaim> dataIndex="ClaimType" title="Resource" />
+        <Table.Column<RoleClaim>
+          dataIndex="ClaimValue"
+          title="Actions"
           render={(value: string) => (
             <>
               {value.split("#").map((claim, index) => (
-                <TagField
-                  key={index}
-                  value={claim}
-                />
+                <TagField key={index} value={claim} />
               ))}
             </>
           )}
         />
         <Table.Column
           title="Actions"
+          width={150}
           render={(_, record: RoleClaim) => (
             <Space>
               {/* We'll use the `EditButton` and `ShowButton` to manage navigation easily */}
               <ShowButton hideText size="small" recordItemId={record.Id} />
-              <EditButton hideText size="small" recordItemId={record.Id} />
+              <EditButton
+                hideText
+                size="small"
+                recordItemId={record.Id}
+                accessControl={{ enabled: true, hideIfUnauthorized: false }}
+              />
               <DeleteButton hideText size="small" recordItemId={record.Id} />
+              <CloneButton
+                hideText
+                size="small"
+                meta={{ authorId: 10 }}
+                recordItemId={record.Id}
+              />
             </Space>
           )}
         />

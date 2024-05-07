@@ -161,9 +161,24 @@ export const ListProduct = () => {
           render={(_, record: Product) => (
             <Space>
               {/* We'll use the `EditButton` and `ShowButton` to manage navigation easily */}
-              <ShowButton hideText size="small" recordItemId={record.Id} />
-              <EditButton hideText size="small" recordItemId={record.Id} />
-              <DeleteButton hideText size="small" recordItemId={record.Id} />
+              <ShowButton
+                hideText
+                size="small"
+                recordItemId={record.Id}
+                accessControl={{ enabled: true, hideIfUnauthorized: true }}
+              />
+              <EditButton
+                hideText
+                size="small"
+                recordItemId={record.Id}
+                accessControl={{ enabled: true, hideIfUnauthorized: false }}
+              />
+              <DeleteButton
+                hideText
+                size="small"
+                recordItemId={record.Id}
+                accessControl={{ enabled: true, hideIfUnauthorized: true }}
+              />
             </Space>
           )}
         />
