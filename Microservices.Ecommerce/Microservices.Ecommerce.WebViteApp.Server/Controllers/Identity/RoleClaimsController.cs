@@ -31,7 +31,7 @@ public class RoleClaimsController : BaseApiController
         }
         var roleclaims = await roleclaimQuery
             .Skip(_start).Take(_end - _start)
-            .OrderByDynamic(_sort, _order)
+            //.OrderByDynamic(_sort, _order)
             .ToListAsync();
         var total = await _context.RoleClaims.CountAsync();
         // Add X-Total-Count header

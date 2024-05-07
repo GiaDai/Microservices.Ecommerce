@@ -7,6 +7,5 @@ namespace Microservices.Ecommerce.Application.Features.Products.Queries.GetAllPr
 {
     public class GetAllProductsParameter : RequestParameter
     {
-
     }
 }

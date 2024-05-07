@@ -5,10 +5,9 @@ import { Typography } from "antd";
 
 export const ShowProduct = () => {
   const {
-    queryResult: { isError, isLoading, data },
+    queryResult: { isLoading, data },
   } = useShow<Product>();
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>;
+
   return (
     <Show isLoading={isLoading}>
       <Typography.Title level={5}>Id</Typography.Title>

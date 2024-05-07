@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microservices.Ecommerce.Application.Features.Products.Queries.GetAllProducts
+﻿namespace Microservices.Ecommerce.Application.Features.Products.Queries.GetAllProducts
 {
     public class GetAllProductsViewModel
     {
@@ -11,5 +7,6 @@ namespace Microservices.Ecommerce.Application.Features.Products.Queries.GetAllPr
         public string Barcode { get; set; }
         public string Description { get; set; }
         public decimal Rate { get; set; }
+        public decimal Price { get; set; }
     }
 }

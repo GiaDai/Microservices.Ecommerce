@@ -9,7 +9,7 @@ namespace Microservices.Ecommerce.Application.Interfaces
     {
         Task<T> GetByIdAsync(int id);
         Task<IReadOnlyList<T>> GetAllAsync();
-        Task<IReadOnlyList<T>> GetPagedReponseAsync(int pageNumber, int pageSize);
+        Task<IReadOnlyList<T>> GetPagedReponseAsync(int _start, int _end);
         Task<T> AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(T entity);

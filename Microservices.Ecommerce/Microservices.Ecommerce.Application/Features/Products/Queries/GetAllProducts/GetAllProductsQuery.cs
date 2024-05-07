@@ -8,12 +8,15 @@ using System.Threading.Tasks;
 
 namespace Microservices.Ecommerce.Application.Features.Products.Queries.GetAllProducts
 {
-    public class GetAllProductsQuery : IRequest<PagedResponse<IEnumerable<GetAllProductsViewModel>>>
+    public class GetAllProductsQuery : IRequest<Response<object>>
     {
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; }
+        public int _start { get; set; }
+        public int _end { get; set; }
+        public string _sort { get; set; }
+        public string _order { get; set; }
+        public List<string> _filter { get; set; }
     }
-    public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, PagedResponse<IEnumerable<GetAllProductsViewModel>>>
+    public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, Response<object>>
     {
         private readonly IProductRepositoryAsync _productRepository;
         private readonly IMapper _mapper;
@@ -23,12 +26,26 @@ namespace Microservices.Ecommerce.Application.Features.Products.Queries.GetAllPr
             _mapper = mapper;
         }
 
-        public async Task<PagedResponse<IEnumerable<GetAllProductsViewModel>>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
+        public async Task<Response<object>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
         {
             var validFilter = _mapper.Map<GetAllProductsParameter>(request);
-            var product = await _productRepository.GetPagedReponseAsync(validFilter.PageNumber, validFilter.PageSize);
-            var productViewModel = _mapper.Map<IEnumerable<GetAllProductsViewModel>>(product);
-            return new PagedResponse<IEnumerable<GetAllProductsViewModel>>(productViewModel, validFilter.PageNumber, validFilter.PageSize);
+            var product = await _productRepository.GetProductPagedListAsync(
+                validFilter._start,
+                validFilter._end,
+                validFilter._order,
+                validFilter._sort,
+                validFilter._filter
+                );
+            return new Response<object>(true, new
+            {
+                product._start,
+                product._pages,
+                product._end,
+                product._total,
+                product._hasNext,
+                product._hasPrevious,
+                _data = _mapper.Map<IEnumerable<GetAllProductsViewModel>>(product)
+            }, "Success");
         }
     }
 }

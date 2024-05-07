@@ -6,17 +6,23 @@ namespace Microservices.Ecommerce.Application.Filters
 {
     public class RequestParameter
     {
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; }
+        public int _start { get; set; }
+        public int _end { get; set; }
+        public string _sort { get; set; }
+        public string _order { get; set; }
+        public List<string> _filter { get; set; }
         public RequestParameter()
         {
-            this.PageNumber = 1;
-            this.PageSize = 10;
+            this._start = 0;
+            this._end = 10;
+            this._sort = "Id";
+            this._order = "asc";
+            this._filter = new List<string>();
         }
-        public RequestParameter(int pageNumber, int pageSize)
+        public RequestParameter(int start, int end)
         {
-            this.PageNumber = pageNumber < 1 ? 1 : pageNumber;
-            this.PageSize = pageSize > 10 ? 10 : pageSize;
+            this._start = start < 1 ? 0 : start;
+            this._end = end > 10 ? 10 : end;
         }
     }
 }

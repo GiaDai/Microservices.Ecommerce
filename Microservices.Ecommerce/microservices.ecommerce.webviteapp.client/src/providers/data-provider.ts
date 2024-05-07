@@ -1,4 +1,5 @@
-import { DataProvider } from "@refinedev/core";
+import { DataProvider, HttpError } from "@refinedev/core";
+import { ResponseRoot } from "./types";
 
 const API_URL = "/api";
 
@@ -47,20 +48,41 @@ export const dataProvider: DataProvider = {
     const response = await fetcher(
       `${API_URL}/${resource}?${params.toString()}`
     );
-    if (response.status < 200 || response.status > 299) throw response;
+    if (!response.ok) {
+      const errorResponse = (await response.json()) as ResponseRoot;
+      const error: HttpError = {
+        message: errorResponse.Message,
+        statusCode: errorResponse.Code,
+      };
+      return Promise.reject(error);
+    }
 
-    const data = await response.json();
-    const total = Number(response.headers.get("x-total-count"));
+    const data = (await response.json()) as ResponseRoot;
+    if (!data.Succeeded) {
+      const error: HttpError = {
+        message: data.Message,
+        statusCode: data.Code,
+      };
+      return Promise.reject(error);
+    }
+    const total = data.Data._total;
     return {
-      data: data,
+      data: data.Data._data,
       total,
     };
   },
   getOne: async ({ resource, id }) => {
     const response = await fetcher(`${API_URL}/${resource}/show/${id}`);
-    if (response.status < 200 || response.status > 299) throw response;
-    const data = await response.json();
-    return { data };
+    if (!response.ok) {
+      const errorResponse = (await response.json()) as ResponseRoot;
+      const error: HttpError = {
+        message: errorResponse.Message,
+        statusCode: errorResponse.Code,
+      };
+      return Promise.reject(error);
+    }
+    const data = (await response.json()) as ResponseRoot;
+    return { data: data.Data as any };
   },
   getMany: async ({ resource, ids }) => {
     const params = new URLSearchParams();
@@ -72,9 +94,16 @@ export const dataProvider: DataProvider = {
     const response = await fetcher(
       `${API_URL}/${resource}?${params.toString()}`
     );
-    if (response.status < 200 || response.status > 299) throw response;
-    const data = await response.json();
-    return { data };
+    if (!response.ok) {
+      const errorResponse = (await response.json()) as ResponseRoot;
+      const error: HttpError = {
+        message: errorResponse.Message,
+        statusCode: errorResponse.Code,
+      };
+      return Promise.reject(error);
+    }
+    const data = (await response.json()) as ResponseRoot;
+    return { data: data.Data as any };
   },
   create: async ({ resource, variables }) => {
     const response = await fetcher(`${API_URL}/${resource}`, {
@@ -84,9 +113,16 @@ export const dataProvider: DataProvider = {
         "Content-Type": "application/json",
       },
     });
-    if (response.status < 200 || response.status > 299) throw response;
-    const data = await response.json();
-    return { data, redirect: "/roleclaims" };
+    if (!response.ok) {
+      const errorResponse = (await response.json()) as ResponseRoot;
+      const error: HttpError = {
+        message: errorResponse.Errors[0] || errorResponse.Message,
+        statusCode: errorResponse.Code,
+      };
+      return Promise.reject(error);
+    }
+    const data = (await response.json()) as ResponseRoot;
+    return { data: data.Data as any };
   },
   update: async ({ resource, id, variables }) => {
     const response = await fetcher(`${API_URL}/${resource}/${id}`, {
@@ -96,17 +132,31 @@ export const dataProvider: DataProvider = {
         "Content-Type": "application/json",
       },
     });
-    if (response.status < 200 || response.status > 299) throw response;
-    const data = await response.json();
-    return { data };
+    if (!response.ok) {
+      const errorResponse = (await response.json()) as ResponseRoot;
+      const error: HttpError = {
+        message: errorResponse.Message,
+        statusCode: errorResponse.Code,
+      };
+      return Promise.reject(error);
+    }
+    const data = (await response.json()) as ResponseRoot;
+    return { data: data.Data as any };
   },
   deleteOne: async ({ resource, id }) => {
     const response = await fetcher(`${API_URL}/${resource}/${id}`, {
       method: "DELETE",
     });
-    if (response.status < 200 || response.status > 299) throw response;
-    const data = await response.json();
-    return { data };
+    if (!response.ok) {
+      const errorResponse = (await response.json()) as ResponseRoot;
+      const error: HttpError = {
+        message: errorResponse.Message,
+        statusCode: errorResponse.Code,
+      };
+      return Promise.reject(error);
+    }
+    const data = (await response.json()) as ResponseRoot;
+    return { data: data.Data as any };
   },
   getApiUrl: function (): string {
     throw new Error("Function not implemented.");

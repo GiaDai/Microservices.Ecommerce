@@ -42,7 +42,7 @@ app.UseStaticFiles();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwaggerExtension();
-    // app.UseDeveloperExceptionPage();
+    app.UseDeveloperExceptionPage();
     app.UseErrorHandlingMiddleware();
 }
 else

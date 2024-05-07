@@ -35,7 +35,7 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.Identity
             }
             var users = await _context.Users
             .Skip(_start).Take(_end - _start)
-            .OrderByDynamic(_sort, _order)
+            //.OrderByDynamic(_sort, _order)
             .ToListAsync();
             var count = await _context.Users.CountAsync();
             Response.Headers.Add("X-Total-Count", count.ToString());

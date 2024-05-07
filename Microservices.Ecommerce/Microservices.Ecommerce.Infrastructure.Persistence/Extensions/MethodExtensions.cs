@@ -1,17 +1,36 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 
-namespace Microservices.Ecommerce.WebViteApp.Server.Controllers
+namespace Microservices.Ecommerce.Infrastructure.Persistence.Extensions
 {
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public abstract class BaseApiController : ControllerBase
+    public static class MethodExtensions
     {
-        private IMediator? _mediator;
-        protected IMediator Mediator => _mediator ??= HttpContext?.RequestServices?.GetService<IMediator>() ?? default!;
+        public static IQueryable<TSource> OrderByDynamic<TSource>(
+        this IQueryable<TSource> query, string propertyName, string ascending)
+        {
+            var entityType = typeof(TSource);
+            var propertyInfo = entityType.GetProperty(propertyName);
+            if (propertyInfo == null)
+            {
+                throw new ArgumentException($"Property {propertyName} not found on type {entityType.Name}");
+            }
 
-        protected IQueryable<T> ApplyFilters<T>(IQueryable<T> query, List<string> filters)
+            var parameter = Expression.Parameter(entityType, "x");
+            var propertyAccess = Expression.MakeMemberAccess(parameter, propertyInfo);
+            var orderByExp = Expression.Lambda(propertyAccess, parameter);
+
+            var methodName = ascending == "asc" ? "OrderBy" : "OrderByDescending";
+            var resultExpression = Expression.Call(typeof(Queryable), methodName,
+                new Type[] { entityType, propertyInfo.PropertyType },
+                query.Expression, Expression.Quote(orderByExp));
+
+            return query.Provider.CreateQuery<TSource>(resultExpression);
+        }
+
+        public static IQueryable<T> ApplyFilters<T>(IQueryable<T> query, List<string> filters)
         {
             foreach (var filter in filters)
             {

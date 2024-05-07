@@ -2,9 +2,6 @@
 using Microservices.Ecommerce.Application.Exceptions;
 using Microservices.Ecommerce.Application.Interfaces.Repositories;
 using Microservices.Ecommerce.Application.Wrappers;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
