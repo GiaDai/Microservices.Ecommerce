@@ -1,4 +1,4 @@
-import { AuthProvider } from "@refinedev/core";
+import { AuthProvider as BaseAuthProvider } from "@refinedev/core";
 import { jwtDecode } from "jwt-decode";
 import { JwtTokenDecoded } from "@authens/types";
 interface ResponseRoot {
@@ -7,13 +7,22 @@ interface ResponseRoot {
   Errors: any;
   Data: any;
 }
+
+interface RefreshTokenResponse {
+  AccessToken: string;
+  RefreshToken: string;
+}
+
+interface AuthProvider extends BaseAuthProvider {
+  refresh: () => Promise<{ success: boolean }>;
+}
+
 export const authProvider: AuthProvider = {
   check: async () => {
     // When logging in, we'll obtain an access token from our API and store it in the local storage.
     // Now let's check if the token exists in the local storage.
     // In the later steps, we'll be implementing the `login` and `logout` methods.
     const token = localStorage.getItem("access_token");
-
     return { authenticated: Boolean(token) };
   },
   getIdentity: async () => {
@@ -52,6 +61,7 @@ export const authProvider: AuthProvider = {
     if (data.Succeeded) {
       if (data.Data.JWToken) {
         localStorage.setItem("access_token", data.Data.JWToken);
+        localStorage.setItem("refresh_token", data.Data.RefreshToken);
         return {
           success: true,
           successNotification: {
@@ -73,6 +83,8 @@ export const authProvider: AuthProvider = {
   },
   logout: async () => {
     localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+
     // We're returning success: true to indicate that the logout operation was successful.
     return { success: true };
   },
@@ -118,5 +130,28 @@ export const authProvider: AuthProvider = {
       },
     };
   },
-  // ...
+  refresh: async () => {
+    const refreshToken = localStorage.getItem("refresh_token");
+    const accessToken = localStorage.getItem("access_token");
+    const response = await fetch("/api/account/refresh-token", {
+      method: "POST",
+      body: JSON.stringify({
+        AccessToken: accessToken,
+        RefreshToken: refreshToken,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.ok) {
+      const data = (await response.json()) as RefreshTokenResponse;
+      localStorage.setItem("access_token", data.AccessToken);
+      localStorage.setItem("refresh_token", data.RefreshToken);
+      return { success: true };
+    } else {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      return { success: false };
+    }
+  },
 };

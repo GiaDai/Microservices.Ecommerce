@@ -16,6 +16,7 @@ var _services = builder.Services;
 _services.AddEnvironmentVariablesExtension();
 _services.AddApplicationLayer();
 _services.AddNpgSqlIdentityInfrastructure(_config, _env);
+_services.AddIdentityLayer();
 _services.AddNpgSqlPersistenceInfrastructure(_env.IsProduction());
 _services.AddSharedInfrastructure(_config);
 _services.AddSwaggerExtension();

@@ -16,7 +16,6 @@ export const AccountSettings = ({ opened, setOpened, userId }: Props) => {
     resource: "users",
     id: userId,
   });
-
   const { FirstName, LastName } = userData?.data ?? {};
 
   const closeModal = () => {

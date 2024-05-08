@@ -8,11 +8,10 @@ using Microservices.Ecommerce.Domain.Entities;
 using Microservices.Ecommerce.Infrastructure.Persistence.Contexts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.v1
 {
-    // [Authorize]
+    [Authorize]
     [ApiVersion("1.0")]
     [Route("api/products")]
     public class ProductController : BaseApiController

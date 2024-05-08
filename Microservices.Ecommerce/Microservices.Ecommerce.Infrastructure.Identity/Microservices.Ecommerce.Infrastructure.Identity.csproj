@@ -22,4 +22,7 @@
 <ItemGroup>
   <ProjectReference Include="..\Microservices.Ecommerce.Infrastructure.Shared\Microservices.Ecommerce.Infrastructure.Shared.csproj" />
 </ItemGroup>
+<ItemGroup>
+  <Folder Include="Repositories\" />
+</ItemGroup>
 </Project>

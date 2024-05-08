@@ -8,7 +8,7 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers
 {
     [Route("api/account")]
     [ApiController]
-    public class AccountController : ControllerBase
+    public class AccountController : BaseApiController
     {
         private readonly IAccountService _accountService;
         public AccountController(IAccountService accountService)
@@ -25,6 +25,7 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers
         [HttpGet("me")]
         public IActionResult GetCurrentUserAsync()
         {
+
             if (HttpContext.User.Identity is ClaimsIdentity identity)
             {
                 var email = identity.FindFirst(ClaimTypes.Email)?.Value;
@@ -45,6 +46,7 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers
             {
                 return Unauthorized();
             }
+            
         }
 
         [HttpPost("register")]
@@ -71,6 +73,13 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers
 
             return Ok(await _accountService.ResetPassword(model));
         }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken(RefreshTokenDto refreshToken)
+        {
+            return Ok(await _accountService.RefreshToken(refreshToken, GenerateIPAddress()));
+        }
+
         private string GenerateIPAddress()
         {
             if (Request.Headers.ContainsKey("X-Forwarded-For"))

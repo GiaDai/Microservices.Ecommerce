@@ -1,5 +1,6 @@
 import { DataProvider, HttpError } from "@refinedev/core";
 import { ResponseRoot } from "./types";
+import { authProvider } from "./auth-provider";
 
 const API_URL = "/api";
 
@@ -48,7 +49,29 @@ export const dataProvider: DataProvider = {
     const response = await fetcher(
       `${API_URL}/${resource}?${params.toString()}`
     );
-    if (!response.ok) {
+
+    if (response.status === 401) {
+      await authProvider.refresh();
+      const error: HttpError = {
+        message: response.statusText,
+        statusCode: response.status,
+      };
+      return Promise.reject(error);
+    } else if (response.ok) {
+      const data = (await response.json()) as ResponseRoot;
+      if (!data.Succeeded) {
+        const error: HttpError = {
+          message: data.Message,
+          statusCode: data.Code,
+        };
+        return Promise.reject(error);
+      }
+      const total = data.Data._total;
+      return {
+        data: data.Data._data,
+        total,
+      };
+    } else {
       const errorResponse = (await response.json()) as ResponseRoot;
       const error: HttpError = {
         message: errorResponse.Message,
@@ -56,20 +79,6 @@ export const dataProvider: DataProvider = {
       };
       return Promise.reject(error);
     }
-
-    const data = (await response.json()) as ResponseRoot;
-    if (!data.Succeeded) {
-      const error: HttpError = {
-        message: data.Message,
-        statusCode: data.Code,
-      };
-      return Promise.reject(error);
-    }
-    const total = data.Data._total;
-    return {
-      data: data.Data._data,
-      total,
-    };
   },
   getOne: async ({ resource, id }) => {
     const response = await fetcher(`${API_URL}/${resource}/show/${id}`);

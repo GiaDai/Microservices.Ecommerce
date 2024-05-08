@@ -2,8 +2,8 @@
 using Microservices.Ecommerce.Application.Wrappers;
 using Microservices.Ecommerce.Domain.Entities;
 using Microservices.Ecommerce.Infrastructure.Persistence.Contexts;
-using Microservices.Ecommerce.Infrastructure.Persistence.Extensions;
 using Microservices.Ecommerce.Infrastructure.Persistence.Repository;
+using Microservices.Ecommerce.Infrastructure.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;

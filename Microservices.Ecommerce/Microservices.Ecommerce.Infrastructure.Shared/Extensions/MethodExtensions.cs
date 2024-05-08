@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Microservices.Ecommerce.Infrastructure.Persistence.Extensions
+namespace Microservices.Ecommerce.Infrastructure.Shared.Extensions
 {
     public static class MethodExtensions
     {

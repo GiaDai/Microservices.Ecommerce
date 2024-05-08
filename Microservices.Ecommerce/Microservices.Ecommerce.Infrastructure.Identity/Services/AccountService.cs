@@ -11,6 +11,7 @@ using Microservices.Ecommerce.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
@@ -71,6 +72,7 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Services
             {
                 throw new ApiException($"Account Not Confirmed for '{request.Email}'.");
             }
+
             JwtSecurityToken jwtSecurityToken = await GenerateJWToken(user);
             AuthenticationResponse response = new AuthenticationResponse();
             response.Id = user.Id;
@@ -80,8 +82,9 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Services
             var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
             response.Roles = rolesList.ToList();
             response.IsVerified = user.EmailConfirmed;
-            var refreshToken = GenerateRefreshToken(ipAddress);
+            var refreshToken = await GenerateRefreshToken(ipAddress, user);
             response.RefreshToken = refreshToken.Token;
+
             return new Response<AuthenticationResponse>(response, $"Authenticated {user.UserName}");
         }
 
@@ -200,6 +203,7 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Services
                 audience: _jwtSettings.Audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes),
+                // expires: DateTime.UtcNow.AddSeconds(5),
                 signingCredentials: signingCredentials);
         }
 
@@ -234,6 +238,29 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Services
             return verificationUri;
         }
 
+        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = true,
+                ValidateIssuer = true,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key)),
+                ValidateLifetime = false,
+                ValidIssuer = _jwtSettings.Issuer,
+                ValidAudience = _jwtSettings.Audience
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken securityToken;
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
+            var jwtSecurityToken = securityToken as JwtSecurityToken;
+            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                throw new SecurityTokenException("Invalid token");
+
+            return principal;
+        }
+
         public async Task<Response<string>> ConfirmEmailAsync(string userId, string code)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -249,15 +276,18 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Services
             }
         }
 
-        private RefreshToken GenerateRefreshToken(string ipAddress)
+        private async Task<RefreshToken> GenerateRefreshToken(string ipAddress, ApplicationUser user)
         {
-            return new RefreshToken
+            var refreshToken = new RefreshToken
             {
                 Token = RandomTokenString(),
                 Expires = DateTime.UtcNow.AddDays(7),
                 Created = DateTime.UtcNow,
                 CreatedByIp = ipAddress
             };
+            user.RefreshTokens = new List<RefreshToken> { refreshToken };
+            await _userManager.UpdateAsync(user);
+            return refreshToken;
         }
 
         public async Task ForgotPassword(ForgotPasswordRequest model, string origin)
@@ -293,6 +323,34 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Services
                 throw new ApiException($"Error occured while reseting the password.");
             }
         }
-    }
 
+        public async Task<RefreshTokenDto> RefreshToken(RefreshTokenDto refreshToken, string ipAddress)
+        {
+            var principal = GetPrincipalFromExpiredToken(refreshToken.AccessToken);
+            if (principal == null)
+            {
+                throw new SecurityTokenException("Invalid token");
+            }
+            var uid = principal.FindFirst("uid")?.Value;
+            var user = await _userManager
+                .Users.Include(x => x.RefreshTokens
+                .Where(t =>
+                    t.Token == refreshToken.RefreshToken
+                    && t.Expires > DateTime.UtcNow
+                    && t.CreatedByIp == ipAddress
+                ))
+            .FirstAsync(x => x.Id == uid);
+            if (user.RefreshTokens.Count > 0)
+            {
+                JwtSecurityToken jwtSecurityToken = await GenerateJWToken(user);
+                var newRefreshToken = await GenerateRefreshToken(ipAddress, user);
+                return new RefreshTokenDto()
+                {
+                    AccessToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                    RefreshToken = newRefreshToken.Token
+                };
+            }
+            throw new SecurityTokenException("Invalid token");
+        }
+    }
 }

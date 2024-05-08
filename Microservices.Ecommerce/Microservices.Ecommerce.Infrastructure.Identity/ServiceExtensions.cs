@@ -1,4 +1,7 @@
-﻿using Microservices.Ecommerce.Application.Interfaces;
+﻿using FluentValidation;
+using MediatR;
+using Microservices.Ecommerce.Application.Behaviours;
+using Microservices.Ecommerce.Application.Interfaces;
 using Microservices.Ecommerce.Application.Wrappers;
 using Microservices.Ecommerce.Domain.Settings;
 using Microservices.Ecommerce.Infrastructure.Identity.Contexts;
@@ -18,6 +21,7 @@ using Newtonsoft.Json;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -110,6 +114,15 @@ namespace Microservices.Ecommerce.Infrastructure.Identity
             }
         }
 
+        public static void AddIdentityLayer(this IServiceCollection services)
+        {
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+        }
+
         public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration _config)
         {
             string privateKeyPath = _config["JWTSettings:PrivatekeyPath"];
@@ -141,11 +154,12 @@ namespace Microservices.Ecommerce.Infrastructure.Identity
                 o.TokenValidationParameters = tokenValidationParameters;
                 o.Events = new JwtBearerEvents()
                 {
+
                     OnAuthenticationFailed = c =>
                     {
-                        c.NoResult();
-                        c.Response.StatusCode = 500;
-                        c.Response.ContentType = "text/plain";
+                        c.Fail("Unauthorized");
+                        c.Response.StatusCode = 401;
+                        c.Response.ContentType = "application/json";
                         return c.Response.WriteAsync(c.Exception.ToString());
                     },
                     OnChallenge = context =>
