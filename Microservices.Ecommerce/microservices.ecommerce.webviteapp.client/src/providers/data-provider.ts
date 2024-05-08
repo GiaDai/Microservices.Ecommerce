@@ -125,7 +125,7 @@ export const dataProvider: DataProvider = {
     if (!response.ok) {
       const errorResponse = (await response.json()) as ResponseRoot;
       const error: HttpError = {
-        message: errorResponse.Errors[0] || errorResponse.Message,
+        message: errorResponse.Errors.join(' ') || errorResponse.Message,
         statusCode: errorResponse.Code,
       };
       return Promise.reject(error);

@@ -1,4 +1,6 @@
-﻿using Microservices.Ecommerce.Infrastructure.Identity.Contexts;
+﻿using Microservices.Ecommerce.Infrastructure.Identity;
+using Microservices.Ecommerce.Infrastructure.Identity.Contexts;
+using Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries.CreateUser;
 using Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries.GetPagingUser;
 using Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries.GetUserById;
 using Microservices.Ecommerce.Infrastructure.Identity.Models;
@@ -38,24 +40,30 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.Identity
             return Ok( await Mediator.Send((new GetUserByIdQuery { Id = id })));
         }
 
-        // PUT: api/users/update/5
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> Update(string id, ApplicationUser user)
+        // POST: api/users
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateUserCommand command)
         {
-            if (id != user.Id)
+            return Ok(await Mediator.Send(command));
+        }
+
+        // PUT: api/users/update/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(string id, UpdateUserCommand command)
+        {
+            if (id != command.Id)
             {
                 return BadRequest();
             }
-            _context.Entry(user).State = EntityState.Modified;
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            return NoContent();
+            return Ok(await Mediator.Send(command));
+        }
+        
+
+        // DELETE: api/users/delete/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            return Ok(await Mediator.Send(new DeleteUserByIdCommand { Id = id }));
         }
     }
 }

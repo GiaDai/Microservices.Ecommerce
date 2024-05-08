@@ -15,7 +15,7 @@ import routerProvider from "@refinedev/react-router-v6";
 import {
   dataProvider,
   authProvider,
-  accessControlProvider,
+  // accessControlProvider,
 } from "@providers/index";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { Header, Unauthorized } from "@components/index";
@@ -34,6 +34,11 @@ import {
   CreateRole,
   EditRole,
   CloneRole,
+  ShowUser,
+  EditUser,
+  CloneUser,
+  CreateUser,
+  ListUser,
 } from "./pages";
 import {
   CloneRoleClaim,
@@ -52,7 +57,7 @@ const App: React.FC = () => {
             dataProvider={dataProvider}
             authProvider={authProvider}
             routerProvider={routerProvider}
-            accessControlProvider={accessControlProvider}
+            // accessControlProvider={accessControlProvider}
             notificationProvider={useNotificationProvider}
             options={{
               syncWithLocation: true,
@@ -77,7 +82,21 @@ const App: React.FC = () => {
                 },
               },
               {
+                name: "users",
+                identifier: "data-users",
+                list: "/identity/users",
+                create: "/identity/users/create",
+                clone: "/identity/users/:id/clone",
+                edit: "/identity/users/:id/edit",
+                show: "/identity/users/:id",
+                meta: {
+                  canDelete: true,
+                  parent: "identity",
+                },
+              },
+              {
                 name: "roles",
+                identifier: "data-roles",
                 list: "/identity/roles",
                 create: "/identity/roles/create",
                 clone: "/identity/roles/:id/clone",
@@ -90,6 +109,7 @@ const App: React.FC = () => {
               },
               {
                 name: "roleclaims",
+                identifier: "data-roleclaims",
                 list: "/identity/roleclaims",
                 create: "/identity/roleclaims/create",
                 clone: "/identity/roleclaims/:id/clone",
@@ -211,18 +231,75 @@ const App: React.FC = () => {
                   />
                 </Route>
                 <Route path="/identity" element={<Outlet />}>
-                  <Route
-                    path="roles"
-                    element={
-                      <CanAccess
-                        resource="roles"
-                        action="list"
-                        fallback={<Unauthorized />}
-                      >
-                        <ListRole />
-                      </CanAccess>
-                    }
-                  >
+                  <Route path="users">
+                    <Route
+                      index
+                      element={
+                        <CanAccess
+                          resource="users"
+                          action="list"
+                          fallback={<Unauthorized />}
+                        >
+                          <ListUser />
+                        </CanAccess>
+                      }
+                    />
+                    <Route
+                      path="create"
+                      element={
+                        <CreateUser />
+                      }
+                    />
+                    <Route
+                      path=":id/clone"
+                      element={
+                        <CanAccess
+                          resource="users"
+                          action="clone"
+                          fallback={<Unauthorized />}
+                        >
+                          <CloneUser />
+                        </CanAccess>
+                      }
+                    />
+                    <Route
+                      path=":id/edit"
+                      element={
+                        <CanAccess
+                          resource="users"
+                          action="edit"
+                          fallback={<Unauthorized />}
+                        >
+                          <EditUser />
+                        </CanAccess>
+                      }
+                    />
+                    <Route
+                      path=":id"
+                      element={
+                        <CanAccess
+                          resource="users"
+                          action="show"
+                          fallback={<Unauthorized />}
+                        >
+                          <ShowUser />
+                        </CanAccess>
+                      }
+                    />
+                  </Route>
+                  <Route path="roles">
+                    <Route
+                      index
+                      element={
+                        <CanAccess
+                          resource="roles"
+                          action="list"
+                          fallback={<Unauthorized />}
+                        >
+                          <ListRole />
+                        </CanAccess>
+                      }
+                    />
                     <Route
                       path="create"
                       element={
@@ -272,18 +349,19 @@ const App: React.FC = () => {
                       }
                     />
                   </Route>
-                  <Route
-                    path="roleclaims"
-                    element={
-                      <CanAccess
-                        resource="roleclaims"
-                        action="list"
-                        fallback={<Unauthorized />}
-                      >
-                        <ListRoleClaim />
-                      </CanAccess>
-                    }
-                  >
+                  <Route path="roleclaims" >
+                    <Route
+                      index
+                      element={
+                        <CanAccess
+                          resource="roleclaims"
+                          action="list"
+                          fallback={<Unauthorized />}
+                        >
+                          <ListRoleClaim />
+                        </CanAccess>
+                      }
+                    />
                     <Route
                       path="create"
                       element={

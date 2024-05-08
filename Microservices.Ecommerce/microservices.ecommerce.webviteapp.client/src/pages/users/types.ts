@@ -1,4 +1,4 @@
-export interface User {
+export interface IUser {
   FirstName: string;
   LastName: string;
   RefreshTokens: any;
@@ -24,4 +24,14 @@ export interface IUserMe {
   name?: string;
   fullname?: string;
   avatarUrl?: string;
+}
+
+export interface ICreateUser {
+  FirstName: string;
+  LastName: string;
+  UserName: string;
+  Email: string;
+  PhoneNumber: any;
+  Password: string;
+  ConfirmPassword: string;
 }

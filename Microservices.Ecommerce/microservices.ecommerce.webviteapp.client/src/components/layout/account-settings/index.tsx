@@ -4,7 +4,7 @@ import { CloseOutlined, EditOutlined, UserOutlined } from "@ant-design/icons";
 import styles from "./index.module.css";
 import { CustomAvatar } from "@components/custom-avatar";
 import { useOne } from "@refinedev/core";
-import { User } from "@pages/users";
+import { IUser } from "@pages/users";
 type Props = {
   opened: boolean;
   setOpened: (opened: boolean) => void;
@@ -12,7 +12,7 @@ type Props = {
 };
 
 export const AccountSettings = ({ opened, setOpened, userId }: Props) => {
-  const { data: userData } = useOne<User>({
+  const { data: userData } = useOne<IUser>({
     resource: "users",
     id: userId,
   });
