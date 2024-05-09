@@ -8,7 +8,8 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers;
 [Route("api/file")]
 public class FileController : ControllerBase
 {
-    private Cloudinary cloudinary = new Cloudinary("cloudinary://853652539285151:35dgbXUNu7U4_zye8KiQkR5GagA@hqxqmqmoo");
+    // private Cloudinary cloudinary = new Cloudinary("cloudinary://853652539285151:35dgbXUNu7U4_zye8KiQkR5GagA@hqxqmqmoo");
+    private Cloudinary cloudinary = new Cloudinary("");
 
     [HttpPost]
     public IActionResult Post(IFormFile file)

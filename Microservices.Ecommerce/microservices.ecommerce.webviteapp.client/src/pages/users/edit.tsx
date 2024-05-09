@@ -2,7 +2,13 @@ import { Edit, useForm, useSelect } from "@refinedev/antd";
 import { IUser } from "./types";
 import { UploadOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Col, Form, Input, Row, Select, Upload } from "antd";
+import type { GetProp, UploadProps } from "antd";
+import React from "react";
+// https://ant.design/components/upload
+type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 export const EditUser = () => {
+  const [loading, setLoading] = React.useState(false);
+  const [imageUrl, setImageUrl] = React.useState<string>();
   const { formProps, saveButtonProps } = useForm<IUser>({
     redirect: "edit",
   });
@@ -54,6 +60,31 @@ export const EditUser = () => {
   );
 
   const formItemLayout = { labelCol: { span: 6 }, wrapperCol: { span: 14 } };
+  const beforeUpload = (file: FileType) => {
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    if (!isJpgOrPng) {
+      console.log("You can only upload JPG/PNG file!");
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      console.error("Image must smaller than 2MB!");
+    }
+    return isJpgOrPng && isLt2M;
+  };
+
+  const handleChange: UploadProps["onChange"] = (info) => {
+    if (info.file.status === "uploading") {
+      setLoading(true);
+      return;
+    }
+    if (info.file.status === "done") {
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj as FileType, (url) => {
+        setLoading(false);
+        setImageUrl(url);
+      });
+    }
+  };
 
   return (
     <Edit
@@ -164,7 +195,10 @@ export const EditUser = () => {
                   console.log(file);
                 }}
                 accept=".png,.jpg"
-                listType="picture"
+                listType="picture-circle"
+                showUploadList={false}
+                beforeUpload={beforeUpload}
+                onChange={handleChange}
               >
                 <Button
                   icon={
