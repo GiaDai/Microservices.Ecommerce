@@ -14,7 +14,7 @@ export const ShowRoleClaim = () => {
 
       <Typography.Title level={5}>Actions</Typography.Title>
       {data?.data?.ClaimValue &&
-        data?.data?.ClaimValue.split("#").map((claim, index) => (
+        data?.data?.ClaimValue.map((claim, index) => (
           <TagField key={index} value={claim} />
         ))}
     </Show>

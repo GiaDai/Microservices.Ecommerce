@@ -1,14 +1,16 @@
 ﻿using Microservices.Ecommerce.Infrastructure.Identity.Contexts;
-using Microsoft.AspNetCore.Identity;
+using Microservices.Ecommerce.Infrastructure.Identity.Features.Role.Commands.CreateRole;
+using Microservices.Ecommerce.Infrastructure.Identity.Features.Role.Commands.DeleteRoleById;
+using Microservices.Ecommerce.Infrastructure.Identity.Features.Role.Commands.UpdateRole;
+using Microservices.Ecommerce.Infrastructure.Identity.Features.Role.Queries.GetPagingRole;
+using Microservices.Ecommerce.Infrastructure.Identity.Features.Role.Queries.GetRoleById;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.Identity
 {
     [Route("api/roles")]
     [ApiController]
-    public class RolesController : ControllerBase
+    public class RolesController : BaseApiController
     {
         private readonly IdentityContext _context;
         public RolesController(IdentityContext context)
@@ -18,38 +20,49 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.Identity
 
         //GET: api/roles?_start=0&_end=10&_order=asc&_sort=Id
         [HttpGet]
-        public async Task<IActionResult> Get(
-            [FromQuery] List<string>? id,
-            [FromQuery] int _start = 0,
-            [FromQuery] int _end = 10,
-            [FromQuery] string _order = "asc",
-            [FromQuery] string _sort = "Id",
-            [FromQuery] List<string>? _filter = null)
+        public async Task<IActionResult> Get([FromQuery] GetPagingRoleParameter fitler)
         {
-            if (id != null && id.Count > 0)
+            return Ok(await Mediator.Send(new GetPagingRoleQuery()
             {
-                var rolesFilter = await _context.Roles.Where(x => id.Contains(x.Id)).ToListAsync();
-                return Ok(rolesFilter);
-            }
-            var roles = await _context.Roles
-            .Skip(_start).Take(_end - _start)
-            //.OrderByDynamic(_sort, _order)
-            .ToListAsync();
-            var count = await _context.Roles.CountAsync();
-            Response.Headers.Add("X-Total-Count", count.ToString());
-            return Ok(roles);
+                id = fitler.id,
+                _end = fitler._end,
+                _start = fitler._start,
+                _order = fitler._order,
+                _sort = fitler._sort,
+                _filter = fitler._filter
+            }));
         }
 
         // GET: api/roles/show/5
         [HttpGet("show/{id}")]
-        public async Task<IActionResult> Get(string id)
+        public async Task<IActionResult> Show(string id)
         {
-            var role = await _context.Roles.FindAsync(id);
-            if (role == null)
+            return Ok(await Mediator.Send(new GetRoleByIdQuery() { Id = id }));
+        }
+
+        // POST: api/roles
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateRoleCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
+        // PUT: api/roles/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(string id, UpdateRoleCommand command)
+        {
+            if (id != command.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
-            return Ok(role);
+            return Ok(await Mediator.Send(command));
+        }
+
+        // DELETE: api/roles/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            return Ok(await Mediator.Send(new DeleteRoleByIdCommand { Id = id }));
         }
     }
 }

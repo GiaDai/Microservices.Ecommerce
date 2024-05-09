@@ -1,4 +1,10 @@
-﻿using Microservices.Ecommerce.Infrastructure.Identity.Contexts;
+﻿using Microservices.Ecommerce.Infrastructure.Identity;
+using Microservices.Ecommerce.Infrastructure.Identity.Contexts;
+using Microservices.Ecommerce.Infrastructure.Identity.Features.RoleClaim.Commands.CreateRoleClaim;
+using Microservices.Ecommerce.Infrastructure.Identity.Features.RoleClaim.Commands.DeleteRoleClaimById;
+using Microservices.Ecommerce.Infrastructure.Identity.Features.RoleClaim.Commands.UpdateRoleClaim;
+using Microservices.Ecommerce.Infrastructure.Identity.Features.RoleClaim.Queries.GetPagingRoleClaim;
+using Microservices.Ecommerce.Infrastructure.Identity.Features.RoleClaim.Queries.GetRoleClaimById;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,81 +24,49 @@ public class RoleClaimsController : BaseApiController
 
     // GET: api/roleclaims?_sort=Id&_order=asc&_start=0&_end=10
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] int _start = 0,
-        [FromQuery] int _end = 10,
-        [FromQuery] string _order = "asc",
-        [FromQuery] string _sort = "Id",
-        [FromQuery] List<string>? _filter = null)
+    public async Task<IActionResult> Get([FromQuery] GetPagingRoleClaimParameter filter)
     {
-        var roleclaimQuery = _context.RoleClaims.AsQueryable();
-        if (_filter != null && _filter.Any())
+        return Ok(await Mediator.Send(new GetPagingRoleClaimQuery()
         {
-            roleclaimQuery = ApplyFilters(roleclaimQuery, _filter);
-        }
-        var roleclaims = await roleclaimQuery
-            .Skip(_start).Take(_end - _start)
-            //.OrderByDynamic(_sort, _order)
-            .ToListAsync();
-        var total = await _context.RoleClaims.CountAsync();
-        // Add X-Total-Count header
-        Response.Headers.Append("X-Total-Count", total.ToString());
-        return Ok(roleclaims);
+            id = filter.id,
+            _end = filter._end,
+            _start = filter._start,
+            _order = filter._order,
+            _sort = filter._sort,
+            _filter = filter._filter
+        }));
     }
 
     // GET: api/roleclaims/5
     [HttpGet("show/{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var roleclaim = await _context.RoleClaims.FindAsync(id);
-
-        if (roleclaim == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(roleclaim);
+        return Ok(await Mediator.Send(new GetRoleClaimByIdQuery() { Id = id }));
     }
 
 
     // POST: api/roleclaims
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] IdentityRoleClaim<string> roleclaim)
+    public async Task<IActionResult> Post(CreateRoleClaimCommand command)
     {
-        _context.RoleClaims.Add(roleclaim);
-        await _context.SaveChangesAsync();
-
-        return Ok(roleclaim);
+        return Ok(await Mediator.Send(command));
     }
 
     // PUT: api/roleclaims/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] IdentityRoleClaim<string> roleclaim)
+    public async Task<IActionResult> Put(int id, UpdateRoleClaimCommand command)
     {
-        if (id != roleclaim.Id)
+        if (id != command.Id)
         {
             return BadRequest();
         }
-
-        _context.Entry(roleclaim).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-
-        return Ok(roleclaim);
+        return Ok(await Mediator.Send(command));
     }
 
     // DELETE: api/roleclaims/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var roleclaim = await _context.RoleClaims.FindAsync(id);
-
-        if (roleclaim == null)
-        {
-            return NotFound();
-        }
-
-        _context.RoleClaims.Remove(roleclaim);
-        await _context.SaveChangesAsync();
-
-        return Ok(roleclaim);
+        return Ok(await Mediator.Send(new DeleteRoleClaimByIdCommand { Id = id }));
     }
 }

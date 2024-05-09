@@ -37,7 +37,7 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.Identity
         [HttpGet("show/{id}")]
         public async Task<IActionResult> Show(string id)
         {
-            return Ok( await Mediator.Send((new GetUserByIdQuery { Id = id })));
+            return Ok(await Mediator.Send((new GetUserByIdQuery { Id = id })));
         }
 
         // POST: api/users
@@ -47,7 +47,7 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.Identity
             return Ok(await Mediator.Send(command));
         }
 
-        // PUT: api/users/update/5
+        // PUT: api/users/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, UpdateUserCommand command)
         {
@@ -57,7 +57,7 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.Identity
             }
             return Ok(await Mediator.Send(command));
         }
-        
+
 
         // DELETE: api/users/delete/5
         [HttpDelete("{id}")]

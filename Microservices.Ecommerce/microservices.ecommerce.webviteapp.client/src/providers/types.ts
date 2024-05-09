@@ -25,3 +25,11 @@ export interface ResponseData {
   _hasPrevious: boolean;
   _data: any[];
 }
+
+export interface ResponseManyRoot {
+  Succeeded: boolean;
+  Code: number;
+  Message: string;
+  Errors: any;
+  Data: any[];
+}

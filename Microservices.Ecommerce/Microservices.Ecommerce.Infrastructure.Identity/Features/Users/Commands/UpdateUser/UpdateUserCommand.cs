@@ -12,16 +12,22 @@ namespace Microservices.Ecommerce.Infrastructure.Identity
     public class UpdateUserCommand : IRequest<Response<ApplicationUser>>
     {
         public string Id { get; set; }
+        public string RoleId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string PhoneNumber { get; set; }
 
         public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Response<ApplicationUser>>
         {
+            private readonly RoleManager<IdentityRole> _roleManager;
             private readonly UserManager<ApplicationUser> _userManager;
-            public UpdateUserCommandHandler(UserManager<ApplicationUser> userManager)
+            public UpdateUserCommandHandler(
+                UserManager<ApplicationUser> userManager,
+                RoleManager<IdentityRole> roleManager
+                )
             {
                 _userManager = userManager;
+                _roleManager = roleManager;
             }
 
             public async Task<Response<ApplicationUser>> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
@@ -32,6 +38,17 @@ namespace Microservices.Ecommerce.Infrastructure.Identity
                 user.LastName = command.LastName ?? user.LastName;
                 user.PhoneNumber = command.PhoneNumber ?? user.PhoneNumber;
                 await _userManager.UpdateAsync(user);
+                var roles = await _userManager.GetRolesAsync(user);
+
+                if (roles.Count > 0)
+                {
+                    var role = await _roleManager.FindByIdAsync(command.RoleId);
+                    if (!roles.Contains(command.RoleId))
+                    {
+                        await _userManager.RemoveFromRolesAsync(user, roles);
+                        await _userManager.AddToRoleAsync(user, role.Name);
+                    }
+                }
                 return new Response<ApplicationUser>(user);
             }
         }

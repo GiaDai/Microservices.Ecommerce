@@ -1,5 +1,5 @@
 import { DataProvider, HttpError } from "@refinedev/core";
-import { ResponseRoot } from "./types";
+import { ResponseManyRoot, ResponseRoot } from "./types";
 import { authProvider } from "./auth-provider";
 
 const API_URL = "/api";
@@ -95,24 +95,24 @@ export const dataProvider: DataProvider = {
   },
   getMany: async ({ resource, ids }) => {
     const params = new URLSearchParams();
-
-    if (ids) {
+    if (ids && ids.length > 0) {
       ids.forEach((id) => params.append("id", String(id)));
+      const response = await fetcher(
+        `${API_URL}/${resource}?${params.toString()}`
+      );
+      if (!response.ok) {
+        const errorResponse = (await response.json()) as ResponseManyRoot;
+        const error: HttpError = {
+          message: errorResponse.Message,
+          statusCode: errorResponse.Code,
+        };
+        return Promise.reject(error);
+      } else {
+        const data = (await response.json()) as ResponseManyRoot;
+        return { data: data.Data as any[] };
+      }
     }
-
-    const response = await fetcher(
-      `${API_URL}/${resource}?${params.toString()}`
-    );
-    if (!response.ok) {
-      const errorResponse = (await response.json()) as ResponseRoot;
-      const error: HttpError = {
-        message: errorResponse.Message,
-        statusCode: errorResponse.Code,
-      };
-      return Promise.reject(error);
-    }
-    const data = (await response.json()) as ResponseRoot;
-    return { data: data.Data as any };
+    return { data: [] };
   },
   create: async ({ resource, variables }) => {
     const response = await fetcher(`${API_URL}/${resource}`, {
@@ -125,7 +125,7 @@ export const dataProvider: DataProvider = {
     if (!response.ok) {
       const errorResponse = (await response.json()) as ResponseRoot;
       const error: HttpError = {
-        message: errorResponse.Errors.join(' ') || errorResponse.Message,
+        message: errorResponse.Errors.join(" ") || errorResponse.Message,
         statusCode: errorResponse.Code,
       };
       return Promise.reject(error);

@@ -9,6 +9,7 @@ using Microservices.Ecommerce.Infrastructure.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,8 +35,22 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries
 
             public async Task<Response<object>> Handle(GetPagingUserQuery request, CancellationToken cancellationToken)
             {
-                var userQuery = _context.Users.AsQueryable();
-                if(request._filter != null && request._filter.Count > 0)
+                var userQuery = _context.Users
+                    .Join(_context.UserRoles,
+                        user => user.Id,
+                        userRole => userRole.UserId,
+                        (user, userRole) => new ApplicationUser
+                        {
+                            Id = user.Id,
+                            UserName = user.UserName,
+                            Email = user.Email,
+                            RoleId = userRole.RoleId,
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            PhoneNumber = user.PhoneNumber
+                        })
+                    .AsQueryable();
+                if (request._filter != null && request._filter.Count > 0)
                 {
                     userQuery = MethodExtensions.ApplyFilters(userQuery, request._filter);
                 }

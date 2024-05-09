@@ -19,7 +19,11 @@ export const CreateRoleClaim = () => {
       saveButtonProps={saveButtonProps}
     >
       <Form {...formProps} layout="vertical">
-        <Form.Item label="RoleId" name="RoleId">
+        <Form.Item
+          label="RoleId"
+          name="Role"
+          rules={[{ required: true, message: "Please select role!" }]}
+        >
           <Select {...selectProps} />
         </Form.Item>
         <Form.Item
@@ -29,12 +33,25 @@ export const CreateRoleClaim = () => {
         >
           <Input />
         </Form.Item>
+
         <Form.Item
-          label="ClaimValue"
           name="ClaimValue"
-          rules={[{ required: true, message: "Please input your ClaimValue!" }]}
+          label="Actions"
+          rules={[
+            {
+              required: true,
+              message: "Please select action for this resource!",
+              type: "array",
+            },
+          ]}
         >
-          <Input />
+          <Select mode="tags" placeholder="Please select favourite colors">
+            <Select.Option value="list">list</Select.Option>
+            <Select.Option value="create">create</Select.Option>
+            <Select.Option value="show">show</Select.Option>
+            <Select.Option value="edit">edit</Select.Option>
+            <Select.Option value="delete">delete</Select.Option>
+          </Select>
         </Form.Item>
       </Form>
     </Create>

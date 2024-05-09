@@ -1,4 +1,5 @@
 export interface IUser {
+  RoleId: string;
   FirstName: string;
   LastName: string;
   RefreshTokens: any;

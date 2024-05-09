@@ -1,10 +1,9 @@
-import { AutoSaveIndicator } from "@refinedev/core";
 import { useForm, useSelect, Create } from "@refinedev/antd";
 import { RoleClaim } from "./types";
 import { Form, Input, Select } from "antd";
 
 export const CloneRoleClaim = () => {
-  const { formProps, saveButtonProps, autoSaveProps } = useForm<RoleClaim>({
+  const { formProps, saveButtonProps } = useForm<RoleClaim>({
     redirect: "list",
   });
 
@@ -19,24 +18,35 @@ export const CloneRoleClaim = () => {
       title="Clone Role Claim"
       saveButtonProps={saveButtonProps}
     >
-      <AutoSaveIndicator {...autoSaveProps} />
       <Form {...formProps} layout="vertical">
-        <Form.Item label="RoleId" name="RoleId">
+        <Form.Item label="Role" name="RoleId">
           <Select {...selectProps} />
         </Form.Item>
         <Form.Item
-          label="ClaimType"
+          label="Resource"
           name="ClaimType"
           rules={[{ required: true, message: "Please input your ClaimType!" }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
-          label="ClaimValue"
           name="ClaimValue"
-          rules={[{ required: true, message: "Please input your ClaimValue!" }]}
+          label="Actions"
+          rules={[
+            {
+              required: true,
+              message: "Please select action for this resource!",
+              type: "array",
+            },
+          ]}
         >
-          <Input />
+          <Select mode="tags" placeholder="Please select favourite colors">
+            <Select.Option value="list">list</Select.Option>
+            <Select.Option value="create">create</Select.Option>
+            <Select.Option value="show">show</Select.Option>
+            <Select.Option value="edit">edit</Select.Option>
+            <Select.Option value="delete">delete</Select.Option>
+          </Select>
         </Form.Item>
       </Form>
     </Create>
