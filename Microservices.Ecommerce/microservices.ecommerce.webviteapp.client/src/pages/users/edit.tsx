@@ -14,10 +14,20 @@ export const EditUser = () => {
   });
 
   const normFile = (e: any) => {
-    console.log("Upload event:", e);
+    // console.log("Upload event:", e);
     if (Array.isArray(e)) {
       return e;
     }
+    // const fileList = [] as any[];
+    // e?.fileList.forEach((file: any) => {
+    //   if (file.response && file.name) {
+    //     fileList.push({
+    //       uid: file.uid,
+    //       name: file.name,
+    //       url: file.response,
+    //     });
+    //   }
+    // });
     return e?.fileList;
   };
 
@@ -146,7 +156,16 @@ export const EditUser = () => {
               getValueFromEvent={normFile}
               extra=""
             >
-              <Upload name="logo" action="/upload.do" listType="picture">
+              <Upload
+                name="file"
+                action="/api/file"
+                multiple={false}
+                onRemove={(file) => {
+                  console.log(file);
+                }}
+                accept=".png,.jpg"
+                listType="picture"
+              >
                 <Button
                   icon={
                     <UploadOutlined
