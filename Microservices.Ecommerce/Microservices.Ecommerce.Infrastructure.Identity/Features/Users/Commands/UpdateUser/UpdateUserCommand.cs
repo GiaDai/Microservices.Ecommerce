@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microservices.Ecommerce.Application.Exceptions;
 using Microservices.Ecommerce.Application.Wrappers;
+using Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Commands.UpdateUser;
 using Microservices.Ecommerce.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 
@@ -16,6 +18,7 @@ namespace Microservices.Ecommerce.Infrastructure.Identity
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string PhoneNumber { get; set; }
+        public List<UpdateUserAvatar> Avatar { get; set; }
 
         public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Response<ApplicationUser>>
         {
@@ -39,7 +42,16 @@ namespace Microservices.Ecommerce.Infrastructure.Identity
                 user.PhoneNumber = command.PhoneNumber ?? user.PhoneNumber;
                 await _userManager.UpdateAsync(user);
                 var roles = await _userManager.GetRolesAsync(user);
-
+                // Add user claim for avatar
+                if (command.Avatar != null)
+                {
+                    await _userManager.AddClaimsAsync(user, new System.Security.Claims.Claim[]
+                    {
+                        new System.Security.Claims.Claim("AvatarUrl", command.Avatar[0].AvatarUrl),
+                        new System.Security.Claims.Claim("AvatarUid", command.Avatar[0].AvatarUid),
+                        new System.Security.Claims.Claim("AvatarName", command.Avatar[0].AvatarName)
+                    });
+                }
                 if (roles.Count > 0)
                 {
                     var role = await _roleManager.FindByIdAsync(command.RoleId);

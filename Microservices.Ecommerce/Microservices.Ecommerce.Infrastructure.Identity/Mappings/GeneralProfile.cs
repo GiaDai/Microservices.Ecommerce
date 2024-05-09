@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries.GetPagingUser;
+using Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries.GetUserById;
 using Microservices.Ecommerce.Infrastructure.Identity.Models;
 
 namespace Microservices.Ecommerce.Infrastructure.Identity.Mappings
@@ -9,6 +10,7 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Mappings
         public GeneralProfile()
         {
             CreateMap<ApplicationUser, GetPagingUserViewModel>().ReverseMap();
+            CreateMap<ApplicationUser, GetUserByIdModel>().ReverseMap();
         }
     }
 }

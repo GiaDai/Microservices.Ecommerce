@@ -8,29 +8,33 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 
 namespace Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries.GetUserById
 {
-    public class GetUserByIdQuery : IRequest<Response<ApplicationUser>>
+    public class GetUserByIdQuery : IRequest<Response<GetUserByIdModel>>
     {
         public string Id { get; set; }
-        public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Response<ApplicationUser>>
+        public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Response<GetUserByIdModel>>
         {
+            private readonly IMapper _mapper;
             private readonly RoleManager<IdentityRole> _roleManager;
             private readonly UserManager<ApplicationUser> _userManager;
             private readonly IdentityContext _context;
 
             public GetUserByIdQueryHandler(
+                IMapper mapper,
                 RoleManager<IdentityRole> roleManager,
                 UserManager<ApplicationUser> userManager,
                 IdentityContext context)
             {
+                _mapper = mapper;
                 _roleManager = roleManager;
                 _userManager = userManager;
                 _context = context;
             }
 
-            public async Task<Response<ApplicationUser>> Handle(GetUserByIdQuery query, CancellationToken cancellationToken)
+            public async Task<Response<GetUserByIdModel>> Handle(GetUserByIdQuery query, CancellationToken cancellationToken)
             {
                 var user = await _userManager.FindByIdAsync(query.Id);
                 if (user == null) throw new ApiException($"User Not Found.");
@@ -43,8 +47,15 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries
                 if (userRole == null) throw new ApiException($"User Role Not Found.");
 
                 user.RoleId = userRole.Id;
-
-                return new Response<ApplicationUser>(user);
+                var userClaims = await _userManager.GetClaimsAsync(user);
+                var userModel = _mapper.Map<GetUserByIdModel>(user);
+                userModel.Avatar = new UserAvatarClaim
+                {
+                    AvatarName = userClaims.FirstOrDefault(x => x.Type == "AvatarName")?.Value,
+                    AvatarUid = userClaims.FirstOrDefault(x => x.Type == "AvatarUid")?.Value,
+                    AvatarUrl = userClaims.FirstOrDefault(x => x.Type == "AvatarUrl")?.Value
+                };
+                return new Response<GetUserByIdModel>(userModel);
             }
         }
     }

@@ -1,7 +1,8 @@
+import {useEffect} from "react";
 import { Edit, useForm, useSelect } from "@refinedev/antd";
 import { IUser } from "./types";
-import { UploadOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Col, Form, Input, Row, Select, Upload } from "antd";
+import { LoadingOutlined,PlusOutlined } from "@ant-design/icons";
+import { Checkbox, Col, Form, Input, Row, Select, Upload, Image } from "antd";
 import type { GetProp, UploadProps } from "antd";
 import React from "react";
 // https://ant.design/components/upload
@@ -12,6 +13,11 @@ export const EditUser = () => {
   const { formProps, saveButtonProps } = useForm<IUser>({
     redirect: "edit",
   });
+
+  useEffect(() => {
+    const avatarUrl = formProps.form?.getFieldValue("Avatar")?.AvatarUrl;
+    setImageUrl(avatarUrl);
+  }, [formProps.form?.getFieldValue("Avatar")]);
 
   const { selectProps } = useSelect({
     resource: "roles",
@@ -72,7 +78,14 @@ export const EditUser = () => {
     return isJpgOrPng && isLt2M;
   };
 
+  const getBase64 = (img: FileType, callback: (url: string) => void) => {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result as string));
+    reader.readAsDataURL(img);
+  };
+
   const handleChange: UploadProps["onChange"] = (info) => {
+    console.log(info);
     if (info.file.status === "uploading") {
       setLoading(true);
       return;
@@ -83,8 +96,27 @@ export const EditUser = () => {
         setLoading(false);
         setImageUrl(url);
       });
+
+      const fileList = info.fileList.map((file) => {
+        if (file.response && file.name) {
+          return {
+            AvatarUid: file.uid,
+            AvatarName: file.name,
+            AvatarUrl: file.response,
+          };
+        }
+        return file;
+      });
+      formProps.form?.setFieldValue("Avatar", fileList);
     }
   };
+
+  const uploadButton = (
+    <button style={{ border: 0, background: 'none' }} type="button">
+      {loading ? <LoadingOutlined onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} /> : <PlusOutlined onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />}
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </button>
+  );
 
   return (
     <Edit
@@ -181,8 +213,8 @@ export const EditUser = () => {
               <Checkbox>Email confirmed</Checkbox>
             </Form.Item>
             <Form.Item
-              name="upload"
-              label="Upload"
+              // name="Avatar"
+              label="Avatar"
               valuePropName="fileList"
               getValueFromEvent={normFile}
               extra=""
@@ -200,16 +232,7 @@ export const EditUser = () => {
                 beforeUpload={beforeUpload}
                 onChange={handleChange}
               >
-                <Button
-                  icon={
-                    <UploadOutlined
-                      onPointerEnterCapture={undefined}
-                      onPointerLeaveCapture={undefined}
-                    />
-                  }
-                >
-                  Click to upload
-                </Button>
+                {imageUrl ? <Image src={imageUrl} /> : uploadButton}
               </Upload>
             </Form.Item>
           </Col>
