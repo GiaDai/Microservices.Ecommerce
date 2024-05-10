@@ -47,6 +47,7 @@ import {
   ListRoleClaim,
   ShowRoleClaim,
 } from "@pages/roleclaims";
+import { Dashboards } from "@pages/dashboards";
 
 const App: React.FC = () => {
   return (
@@ -163,7 +164,7 @@ const App: React.FC = () => {
                         action="list"
                         fallback={<Unauthorized />}
                       >
-                        <h1>Dashboard</h1>
+                        <Dashboards />
                       </CanAccess>
                     }
                   />
@@ -244,12 +245,7 @@ const App: React.FC = () => {
                         </CanAccess>
                       }
                     />
-                    <Route
-                      path="create"
-                      element={
-                        <CreateUser />
-                      }
-                    />
+                    <Route path="create" element={<CreateUser />} />
                     <Route
                       path=":id/clone"
                       element={
@@ -349,7 +345,7 @@ const App: React.FC = () => {
                       }
                     />
                   </Route>
-                  <Route path="roleclaims" >
+                  <Route path="roleclaims">
                     <Route
                       index
                       element={

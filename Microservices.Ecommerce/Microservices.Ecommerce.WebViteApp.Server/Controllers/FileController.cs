@@ -8,8 +8,8 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers;
 [Route("api/file")]
 public class FileController : ControllerBase
 {
-    // private Cloudinary cloudinary = new Cloudinary("cloudinary://853652539285151:35dgbXUNu7U4_zye8KiQkR5GagA@hqxqmqmoo");
-    private Cloudinary cloudinary = new Cloudinary("");
+    private Cloudinary cloudinary = new Cloudinary("cloudinary://853652539285151:35dgbXUNu7U4_zye8KiQkR5GagA@hqxqmqmoo");
+    // private Cloudinary cloudinary = new Cloudinary("");
 
     [HttpPost]
     public IActionResult Post(IFormFile file)
@@ -24,6 +24,28 @@ public class FileController : ControllerBase
             Folder = "samples/haircut",
         };
         var uploadResult = cloudinary.Upload(uploadParams);
-        return Ok(uploadResult.Url);
+        return Ok(new
+        {
+            uploadResult.PublicId,
+            uploadResult.Url
+        });
+    }
+
+    [HttpDelete()]
+    public IActionResult Delete([FromQuery] string publicId)
+    {
+        var deleteParams = new DeletionParams(publicId)
+        {
+            ResourceType = ResourceType.Image
+        };
+        var deleteResult = cloudinary.Destroy(deleteParams);
+        return Ok(deleteResult);
+    }
+
+    [HttpGet("{publicId}")]
+    public IActionResult Get(string publicId)
+    {
+        var url = cloudinary.Api.UrlImgUp.BuildUrl(publicId);
+        return Ok(url);
     }
 }

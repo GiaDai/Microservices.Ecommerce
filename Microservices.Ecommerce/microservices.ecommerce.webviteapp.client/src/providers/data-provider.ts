@@ -1,4 +1,4 @@
-import { DataProvider, HttpError } from "@refinedev/core";
+import { DataProvider as BaseDataProvider, HttpError } from "@refinedev/core";
 import { ResponseManyRoot, ResponseRoot } from "./types";
 import { authProvider } from "./auth-provider";
 
@@ -13,6 +13,11 @@ const fetcher = async (url: string, options?: RequestInit) => {
     },
   });
 };
+
+export interface DataProvider extends BaseDataProvider {
+  getApiUrl(): string;
+  deleteFile(publicId: string): void;
+}
 
 export const dataProvider: DataProvider = {
   getList: async ({ resource, pagination, filters, sorters }) => {
@@ -169,5 +174,15 @@ export const dataProvider: DataProvider = {
   },
   getApiUrl: function (): string {
     throw new Error("Function not implemented.");
+  },
+  deleteFile: async (publicId): Promise<boolean> => {
+    const response = await fetcher(`${API_URL}/file?publicId=${publicId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.ok;
   },
 };
