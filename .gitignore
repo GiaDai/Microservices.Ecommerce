@@ -5,3 +5,4 @@
 **/appsettings.Development.json
 /.vscode
 /Microservices.Ecommerce/Microservices.Ecommerce.WebApi
+/Microservices.Ecommerce/Microservices.Ecommerce.WebViteApp.Server/appsettings.Development.json
