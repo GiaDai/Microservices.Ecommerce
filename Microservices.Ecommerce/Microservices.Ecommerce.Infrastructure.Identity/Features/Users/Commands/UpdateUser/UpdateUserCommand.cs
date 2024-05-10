@@ -48,8 +48,7 @@ namespace Microservices.Ecommerce.Infrastructure.Identity
                     await _userManager.AddClaimsAsync(user, new System.Security.Claims.Claim[]
                     {
                         new System.Security.Claims.Claim("AvatarUrl", command.Avatar[0].AvatarUrl),
-                        new System.Security.Claims.Claim("AvatarUid", command.Avatar[0].AvatarUid),
-                        new System.Security.Claims.Claim("AvatarName", command.Avatar[0].AvatarName)
+                        new System.Security.Claims.Claim("AvatarUid", command.Avatar[0].AvatarUid)
                     });
                 }
                 if (roles.Count > 0)

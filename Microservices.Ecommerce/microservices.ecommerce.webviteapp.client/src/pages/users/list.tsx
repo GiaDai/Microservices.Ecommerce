@@ -8,12 +8,13 @@ import {
   useSelect,
   FilterDropdown,
 } from "@refinedev/antd";
-import { IUser } from "./types";
-import { Select, Space, Table } from "antd";
+import { IUser, IUserShort } from "./types";
+import { Select, Space, Table, Typography } from "antd";
 import { Role } from "@pages/roles/types";
 import { getDefaultFilter, useMany } from "@refinedev/core";
+import { CustomAvatar } from "@components/custom-avatar";
 export const ListUser = () => {
-  const { tableProps, filters } = useTable<IUser>({
+  const { tableProps, filters } = useTable<IUserShort>({
     resource: "users",
     pagination: { current: 1, pageSize: 10 },
     sorters: { initial: [{ field: "Id", order: "asc" }] },
@@ -37,7 +38,21 @@ export const ListUser = () => {
           key="rowNumber"
           render={(_text, _record, index) => index + 1}
         />
-        <Table.Column<IUser> dataIndex="FirstName" title="FirstName" />
+        <Table.Column<IUser>
+          dataIndex="Name"
+          title="Name"
+          render={(_, record: IUserShort) => {
+            return (
+              <Space>
+                <CustomAvatar
+                  src={record.AvatarUrl}
+                  name={`${record.FirstName} ${record.LastName}`}
+                />
+                <Typography.Text>{`${record.FirstName} ${record.LastName}`}</Typography.Text>
+              </Space>
+            );
+          }}
+        />
         <Table.Column<IUser>
           dataIndex="RoleId"
           title="Role"
@@ -59,7 +74,6 @@ export const ListUser = () => {
           )}
           defaultFilteredValue={getDefaultFilter("RoleId", filters, "eq")}
         />
-        <Table.Column<IUser> dataIndex="LastName" title="LastName" />
         <Table.Column<IUser> dataIndex="Email" title="Email" />
         <Table.Column<IUser> dataIndex="PhoneNumber" title="PhoneNumber" />
         <Table.Column

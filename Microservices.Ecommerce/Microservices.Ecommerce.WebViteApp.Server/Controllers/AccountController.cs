@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Microservices.Ecommerce.Application.DTOs.Account;
 using Microservices.Ecommerce.Application.Interfaces;
+using Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries.GetMeByToken;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,30 +24,18 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers
 
         [Authorize]
         [HttpGet("me")]
-        public IActionResult GetCurrentUserAsync()
+        public async Task<IActionResult> GetCurrentUserAsync()
         {
 
             if (HttpContext.User.Identity is ClaimsIdentity identity)
             {
-                var email = identity.FindFirst(ClaimTypes.Email)?.Value;
-                var name = identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var fullname = identity.FindFirst("fullname")?.Value;
-                var roles = identity.FindAll(ClaimTypes.Role).Select(x => x.Value);
-                var uid = identity.FindFirst("uid")?.Value;
-                return Ok(new
-                {
-                    email,
-                    name,
-                    fullname,
-                    roles,
-                    uid
-                });
+                return Ok(await Mediator.Send(new GetMeByTokenQuery { Identity = identity }));
             }
             else
             {
                 return Unauthorized();
             }
-            
+
         }
 
         [HttpPost("register")]

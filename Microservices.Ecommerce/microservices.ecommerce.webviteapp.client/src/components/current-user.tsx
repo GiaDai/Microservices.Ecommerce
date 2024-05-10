@@ -7,14 +7,13 @@ import { Button, Popover } from "antd";
 
 import { CustomAvatar } from "./custom-avatar";
 import { Text } from "./text";
-import { IUserMe } from "@pages/users";
 import { AccountSettings } from "./layout/account-settings";
+import { IUserByMe } from "@pages/users";
 
 export const CurrentUser: React.FC = () => {
   const [opened, setOpened] = useState(false);
-  const { data: user } = useGetIdentity<IUserMe>();
+  const { data: user } = useGetIdentity<IUserByMe>();
   const { mutate: logout } = useLogout();
-
   const content = (
     <div
       style={{
@@ -28,7 +27,7 @@ export const CurrentUser: React.FC = () => {
           padding: "12px 20px",
         }}
       >
-        {user?.fullname || user?.name || "User"}
+        {user?.Fullname || user?.Name || "User"}
       </Text>
       <div
         style={{
@@ -82,8 +81,8 @@ export const CurrentUser: React.FC = () => {
         overlayStyle={{ zIndex: 999 }}
       >
         <CustomAvatar
-          name={user?.fullname}
-          src={user?.avatarUrl}
+          name={user?.Fullname}
+          src={user?.AvatarUrl}
           size="default"
           style={{ cursor: "pointer" }}
         />
@@ -92,7 +91,7 @@ export const CurrentUser: React.FC = () => {
         <AccountSettings
           opened={opened}
           setOpened={setOpened}
-          userId={user.uid}
+          userId={user.Uid}
         />
       )}
     </>

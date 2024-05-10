@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microservices.Ecommerce.Application.Enums;
 using Microservices.Ecommerce.Application.Exceptions;
 using Microservices.Ecommerce.Application.Wrappers;
+using Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Commands.UpdateUser;
 using Microservices.Ecommerce.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 
@@ -21,6 +23,7 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries
         public bool EmailConfirmed { get; set; }
         public string Password { get; set; }
         public string ConfirmPassword { get; set; }
+        public List<UpdateUserAvatar> Avatar { get; set; }
 
         public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Response<ApplicationUser>>
         {
@@ -58,6 +61,15 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries
                     {
                         var role = await _roleManager.FindByIdAsync(request.RoleId);
                         await _userManager.AddToRoleAsync(user, role.Name);
+                        // Add user claim for avatar
+                        if (request.Avatar != null)
+                        {
+                            await _userManager.AddClaimsAsync(user, new System.Security.Claims.Claim[]
+                            {
+                                new System.Security.Claims.Claim("AvatarUrl", request.Avatar[0].AvatarUrl),
+                                new System.Security.Claims.Claim("AvatarUid", request.Avatar[0].AvatarUid)
+                            });
+                        }
                         // var verificationUri = await SendVerificationEmail(user, origin);
                         //TODO: Attach Email Service here and configure it via appsettings
                         // await _emailService.SendAsync(new Application.DTOs.Email.EmailRequest() { From = "mail@codewithmukesh.com", To = user.Email, Body = $"Please confirm your account by visiting this URL {verificationUri}", Subject = "Confirm Registration" });

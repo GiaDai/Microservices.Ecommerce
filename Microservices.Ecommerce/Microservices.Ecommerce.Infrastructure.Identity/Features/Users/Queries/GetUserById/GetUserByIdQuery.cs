@@ -51,7 +51,6 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries
                 var userModel = _mapper.Map<GetUserByIdModel>(user);
                 userModel.Avatar = new UserAvatarClaim
                 {
-                    AvatarName = userClaims.FirstOrDefault(x => x.Type == "AvatarName")?.Value,
                     AvatarUid = userClaims.FirstOrDefault(x => x.Type == "AvatarUid")?.Value,
                     AvatarUrl = userClaims.FirstOrDefault(x => x.Type == "AvatarUrl")?.Value
                 };

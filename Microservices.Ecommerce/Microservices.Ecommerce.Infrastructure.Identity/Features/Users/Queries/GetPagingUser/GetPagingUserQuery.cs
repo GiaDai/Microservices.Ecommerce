@@ -39,22 +39,33 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries
                     .Join(_context.UserRoles,
                         user => user.Id,
                         userRole => userRole.UserId,
-                        (user, userRole) => new ApplicationUser
-                        {
-                            Id = user.Id,
-                            UserName = user.UserName,
-                            Email = user.Email,
-                            RoleId = userRole.RoleId,
-                            FirstName = user.FirstName,
-                            LastName = user.LastName,
-                            PhoneNumber = user.PhoneNumber
-                        })
+                        (user, userRole) => new { user, userRole })
+                    .GroupJoin(_context.UserClaims,
+                        userRole => userRole.user.Id,
+                        userClaim => userClaim.UserId,
+                        (userRole, userClaims) => new { userRole, userClaims })
+                    .SelectMany(
+                        uc => uc.userClaims.DefaultIfEmpty(),
+                        (uc, userClaim) => new { uc.userRole.user, uc.userRole.userRole, userClaim })
+                    .Where(uc => uc.userClaim == null || uc.userClaim.ClaimType == "AvatarUrl")
+                    .Select(uc => new GetPagingUserViewModel
+                    {
+                        Id = uc.user.Id,
+                        UserName = uc.user.UserName,
+                        Email = uc.user.Email,
+                        RoleId = uc.userRole.RoleId,
+                        FirstName = uc.user.FirstName,
+                        LastName = uc.user.LastName,
+                        PhoneNumber = uc.user.PhoneNumber,
+                        AvatarUrl = uc.userClaim != null ? uc.userClaim.ClaimValue : null
+                    })
                     .AsQueryable();
                 if (request._filter != null && request._filter.Count > 0)
                 {
                     userQuery = MethodExtensions.ApplyFilters(userQuery, request._filter);
                 }
-                var users = await PagedList<ApplicationUser>.ToPagedList(userQuery.OrderByDynamic(request._sort, request._order).AsNoTracking(), request._start, request._end);
+
+                var users = await PagedList<GetPagingUserViewModel>.ToPagedList(userQuery.OrderByDynamic(request._sort, request._order).AsNoTracking(), request._start, request._end);
                 return new Response<object>(true, new
                 {
                     users._start,
@@ -63,7 +74,7 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries
                     users._total,
                     users._hasNext,
                     users._hasPrevious,
-                    _data = _mapper.Map<IEnumerable<GetPagingUserViewModel>>(users)
+                    _data = users
                 }, "Success");
             }
         }

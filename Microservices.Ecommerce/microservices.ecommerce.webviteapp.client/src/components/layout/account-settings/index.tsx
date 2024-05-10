@@ -16,7 +16,7 @@ export const AccountSettings = ({ opened, setOpened, userId }: Props) => {
     resource: "users",
     id: userId,
   });
-  const { FirstName, LastName } = userData?.data ?? {};
+  const { FirstName, LastName, Avatar } = userData?.data ?? {};
 
   const closeModal = () => {
     setOpened(false);
@@ -53,9 +53,7 @@ export const AccountSettings = ({ opened, setOpened, userId }: Props) => {
               fontSize: "40px",
             }}
             size={96}
-            src={
-              "https://refine-crm.ams3.cdn.digitaloceanspaces.com/avatars/12.jpg"
-            }
+            src={Avatar?.AvatarUrl}
             name={`${FirstName} ${LastName}`}
           />
           <Typography.Title

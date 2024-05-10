@@ -1,25 +1,35 @@
 import { Create, useForm, useSelect } from "@refinedev/antd";
-import { ICreateUser } from "./types";
-import { Form, Input, Row, Col, Select, Upload, Button, Checkbox } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { ICreateUser, IUserAvatar } from "./types";
+import { Form, Input, Row, Col, Select, Checkbox } from "antd";
+import { AvatarProps, UploadAvatar } from "@components/index";
+import React, { useEffect } from "react";
 export const CreateUser = () => {
+  const [urlAvatar, setUrlAvatar] = React.useState<AvatarProps>();
   const { formProps, saveButtonProps } = useForm<ICreateUser>({
     redirect: "edit",
   });
+
+  useEffect(() => {
+    const avatarUrl = formProps.form?.getFieldValue("Avatar") as IUserAvatar;
+    setUrlAvatar({
+      PublicId: avatarUrl?.AvatarUid,
+      Url: avatarUrl?.AvatarUrl,
+    });
+    if (urlAvatar?.PublicId && urlAvatar?.Url) {
+      formProps.form?.setFieldValue("Avatar", [
+        {
+          AvatarUid: urlAvatar?.PublicId,
+          AvatarUrl: urlAvatar.Url,
+        },
+      ]);
+    }
+  }, [formProps.form, urlAvatar]);
 
   const { selectProps } = useSelect({
     resource: "roles",
     optionLabel: "Name",
     optionValue: "Id",
   });
-
-  const normFile = (e: any) => {
-    console.log("Upload event:", e);
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
 
   const tailFormItemLayout = {
     wrapperCol: {
@@ -170,25 +180,12 @@ export const CreateUser = () => {
             >
               <Checkbox>Email confirmed</Checkbox>
             </Form.Item>
-            <Form.Item
-              name="upload"
-              label="Upload"
-              valuePropName="fileList"
-              getValueFromEvent={normFile}
-              extra=""
-            >
-              <Upload name="logo" action="/upload.do" listType="picture">
-                <Button
-                  icon={
-                    <UploadOutlined
-                      onPointerEnterCapture={undefined}
-                      onPointerLeaveCapture={undefined}
-                    />
-                  }
-                >
-                  Click to upload
-                </Button>
-              </Upload>
+            <Form.Item label="Avatar" name="Avatar">
+              <UploadAvatar
+                setUrlAvatar={setUrlAvatar}
+                publicId={urlAvatar?.PublicId}
+                url={urlAvatar?.Url}
+              />
             </Form.Item>
           </Col>
         </Row>

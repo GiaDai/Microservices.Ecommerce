@@ -1,7 +1,8 @@
-import { AuthProvider as BaseAuthProvider } from "@refinedev/core";
+import { AuthProvider as BaseAuthProvider, HttpError } from "@refinedev/core";
 import { jwtDecode } from "jwt-decode";
 import { JwtTokenDecoded } from "@authens/types";
-interface ResponseRoot {
+import { ResponseRoot } from "./types";
+interface ResponseAuthen {
   Succeeded: boolean;
   Message: string;
   Errors: any;
@@ -35,18 +36,18 @@ export const authProvider: AuthProvider = {
     if (response.status < 200 || response.status > 299) {
       localStorage.removeItem("access_token");
       // We're returning success: true to indicate that the logout operation was successful.
-      return {
-        success: true,
-        successNotification: {
-          message: "Login Successful",
-          description: "You have been successfully logged in.",
-        },
-      };
     }
 
-    const data = await response.json();
-
-    return data;
+    const data = (await response.json()) as ResponseRoot;
+    if (!data.Succeeded) {
+      const errorResponse = (await response.json()) as ResponseRoot;
+      const error: HttpError = {
+        message: errorResponse.Message,
+        statusCode: errorResponse.Code,
+      };
+      return Promise.reject(error);
+    }
+    return data.Data as any;
   },
   login: async ({ email, password }) => {
     const response = await fetch("/api/account/authenticate", {
@@ -57,7 +58,7 @@ export const authProvider: AuthProvider = {
       },
     });
 
-    const data = (await response.json()) as ResponseRoot;
+    const data = (await response.json()) as ResponseAuthen;
     if (data.Succeeded) {
       if (data.Data.JWToken) {
         localStorage.setItem("access_token", data.Data.JWToken);
