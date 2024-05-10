@@ -47,5 +47,11 @@ namespace Microservices.Ecommerce.Infrastructure.Shared.Environments
         public const string RabbitMqPort = "RABBITMQ_PORT";
         public static bool HasRabbitMqPort() => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(RabbitMqPort));
         #endregion
+
+        #region Cloudinary
+        public const string CloudinaryCloudUrl = "CLOUDINARY_URL";
+        public static bool HasCloudinaryCloudUrl() => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(CloudinaryCloudUrl));
+
+        #endregion
     }
 }

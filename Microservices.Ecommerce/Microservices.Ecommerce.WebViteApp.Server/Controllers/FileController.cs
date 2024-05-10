@@ -1,5 +1,6 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using Microservices.Ecommerce.Infrastructure.Shared.Environments;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Microservices.Ecommerce.WebViteApp.Server.Controllers;
@@ -8,13 +9,18 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers;
 [Route("api/file")]
 public class FileController : ControllerBase
 {
-    private Cloudinary cloudinary = new Cloudinary("cloudinary://853652539285151:35dgbXUNu7U4_zye8KiQkR5GagA@hqxqmqmoo");
-    // private Cloudinary cloudinary = new Cloudinary("");
+    private readonly ICloudinarySettingsProvider _cloudinaryProvider;
+    private readonly Cloudinary _cloudinary;
+    public FileController(ICloudinarySettingsProvider cloudinaryProvider)
+    {
+        _cloudinaryProvider = cloudinaryProvider;
+        _cloudinary = new Cloudinary(_cloudinaryProvider.GetConnectionString());
+    }
 
     [HttpPost]
     public IActionResult Post(IFormFile file)
     {
-        cloudinary.Api.Secure = true;
+        _cloudinary.Api.Secure = true;
         var uploadParams = new ImageUploadParams()
         {
             File = new FileDescription(file.FileName, file.OpenReadStream()),
@@ -23,7 +29,7 @@ public class FileController : ControllerBase
             Overwrite = true,
             Folder = "samples/haircut",
         };
-        var uploadResult = cloudinary.Upload(uploadParams);
+        var uploadResult = _cloudinary.Upload(uploadParams);
         return Ok(new
         {
             uploadResult.PublicId,
@@ -38,14 +44,14 @@ public class FileController : ControllerBase
         {
             ResourceType = ResourceType.Image
         };
-        var deleteResult = cloudinary.Destroy(deleteParams);
+        var deleteResult = _cloudinary.Destroy(deleteParams);
         return Ok(deleteResult);
     }
 
     [HttpGet("{publicId}")]
     public IActionResult Get(string publicId)
     {
-        var url = cloudinary.Api.UrlImgUp.BuildUrl(publicId);
+        var url = _cloudinary.Api.UrlImgUp.BuildUrl(publicId);
         return Ok(url);
     }
 }

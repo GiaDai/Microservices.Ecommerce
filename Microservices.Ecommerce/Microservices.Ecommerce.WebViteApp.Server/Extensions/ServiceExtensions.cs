@@ -68,6 +68,7 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Extensions
             services.AddTransient<IDatabaseSettingsProvider, DatabaseSettingsProvider>();
             services.AddTransient<IRedisSettingsProvider, RedisSettingsProvider>();
             services.AddTransient<IElasticSettingsProvider, ElasticSettingsProvider>();
+            services.AddTransient<ICloudinarySettingsProvider, CloudinarySettingsProvider>();
         }
     }
 }
