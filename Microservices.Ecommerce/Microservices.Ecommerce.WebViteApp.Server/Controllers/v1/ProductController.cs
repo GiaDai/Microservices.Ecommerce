@@ -1,6 +1,7 @@
 ﻿
 using Microservices.Ecommerce.Application.Features.Products.Commands.CreateProduct;
 using Microservices.Ecommerce.Application.Features.Products.Commands.DeleteProductById;
+using Microservices.Ecommerce.Application.Features.Products.Commands.DeleteProductByIds;
 using Microservices.Ecommerce.Application.Features.Products.Commands.UpdateProduct;
 using Microservices.Ecommerce.Application.Features.Products.Queries.GetAllProducts;
 using Microservices.Ecommerce.Application.Features.Products.Queries.GetProductById;
@@ -50,6 +51,14 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
+        // POST: api/products/range
+        [AllowAnonymous]
+        [HttpPost("range")]
+        public async Task<IActionResult> PostRange(CreateRangeProductCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
         // PUT: api/products/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, UpdateProductCommand command)
@@ -66,6 +75,13 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.v1
         public async Task<IActionResult> Delete(int id)
         {
             return Ok(await Mediator.Send(new DeleteProductByIdCommand { Id = id }));
+        }
+
+        // DELETE: api/products/range
+        [HttpDelete("range")]
+        public async Task<IActionResult> DeleteRange(DeleteProductByIdsCommand command)
+        {
+            return Ok(await Mediator.Send(command));
         }
     }
 }

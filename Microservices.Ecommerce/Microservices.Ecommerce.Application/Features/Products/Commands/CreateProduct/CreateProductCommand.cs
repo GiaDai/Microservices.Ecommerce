@@ -14,6 +14,7 @@ namespace Microservices.Ecommerce.Application.Features.Products.Commands.CreateP
         public string Barcode { get; set; }
         public string Description { get; set; }
         public decimal Rate { get; set; }
+        public decimal Price { get; set; }
     }
     public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Response<int>>
     {

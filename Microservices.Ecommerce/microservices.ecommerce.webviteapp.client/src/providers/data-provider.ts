@@ -138,6 +138,28 @@ export const dataProvider: DataProvider = {
     const data = (await response.json()) as ResponseRoot;
     return { data: data.Data as any };
   },
+  createMany: async ({ resource, variables }) => {
+    console.log("createMany", resource, variables);
+    variables = variables as any[];
+
+    const response = await fetcher(`${API_URL}/${resource}/range`, {
+      method: "POST",
+      body: JSON.stringify(variables),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      const errorResponse = (await response.json()) as ResponseManyRoot;
+      const error: HttpError = {
+        message: errorResponse.Message,
+        statusCode: errorResponse.Code,
+      };
+      return Promise.reject(error);
+    }
+    const data = (await response.json()) as ResponseManyRoot;
+    return { data: data.Data as any };
+  },
   update: async ({ resource, id, variables }) => {
     const response = await fetcher(`${API_URL}/${resource}/${id}`, {
       method: "PUT",
@@ -160,6 +182,25 @@ export const dataProvider: DataProvider = {
   deleteOne: async ({ resource, id }) => {
     const response = await fetcher(`${API_URL}/${resource}/${id}`, {
       method: "DELETE",
+    });
+    if (!response.ok) {
+      const errorResponse = (await response.json()) as ResponseRoot;
+      const error: HttpError = {
+        message: errorResponse.Message,
+        statusCode: errorResponse.Code,
+      };
+      return Promise.reject(error);
+    }
+    const data = (await response.json()) as ResponseRoot;
+    return { data: data.Data as any };
+  },
+  deleteMany: async ({ resource, ids }) => {
+    const response = await fetcher(`${API_URL}/${resource}/range`, {
+      method: "DELETE",
+      body: JSON.stringify(ids),
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
     if (!response.ok) {
       const errorResponse = (await response.json()) as ResponseRoot;

@@ -56,5 +56,17 @@ namespace Microservices.Ecommerce.Infrastructure.Persistence.Repository
                  .Set<T>()
                  .ToListAsync();
         }
+
+        public async Task<List<T>> AddRangeAsync(List<T> entity)
+        {
+            await _dbContext.Set<T>().AddRangeAsync(entity);
+            await _dbContext.SaveChangesAsync();
+            return entity;
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

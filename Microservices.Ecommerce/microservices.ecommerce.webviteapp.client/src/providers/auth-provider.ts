@@ -90,7 +90,6 @@ export const authProvider: AuthProvider = {
     return { success: true };
   },
   onError: async (error) => {
-    console.error(error);
     return { error };
   },
   getPermissions: async () => {

@@ -1,12 +1,12 @@
 import { useShow } from "@refinedev/core";
-import { Product } from "./types";
+import { IProduct } from "./types";
 import { Show, TextField } from "@refinedev/antd";
 import { Typography } from "antd";
 
 export const ShowProduct = () => {
   const {
     queryResult: { isLoading, data },
-  } = useShow<Product>();
+  } = useShow<IProduct>();
 
   return (
     <Show isLoading={isLoading}>

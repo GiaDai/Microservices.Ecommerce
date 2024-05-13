@@ -1,8 +1,8 @@
 import { useForm, Edit } from "@refinedev/antd";
-import { Product } from "./types";
+import { IProduct } from "./types";
 import { Form, Input, InputNumber } from "antd";
 export const EditProduct = () => {
-  const { formProps, saveButtonProps } = useForm<Product>({
+  const { formProps, saveButtonProps } = useForm<IProduct>({
     redirect: "show",
   });
   return (

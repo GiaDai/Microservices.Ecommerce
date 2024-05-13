@@ -1,11 +1,5 @@
 ﻿using FluentValidation;
 using Microservices.Ecommerce.Application.Interfaces.Repositories;
-using Microservices.Ecommerce.Domain.Entities;
-using Microsoft.EntityFrameworkCore.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,6 +23,16 @@ namespace Microservices.Ecommerce.Application.Features.Products.Commands.CreateP
                 .NotEmpty().WithMessage("{PropertyName} is required.")
                 .NotNull()
                 .MaximumLength(50).WithMessage("{PropertyName} must not exceed 50 characters.");
+
+            RuleFor(p => p.Rate)
+                .NotEmpty().WithMessage("{PropertyName} is required.")
+                .NotNull()
+                .GreaterThan(10).WithMessage("{PropertyName} must be greater than 10.");
+
+            RuleFor(p => p.Price)
+                .NotEmpty().WithMessage("{PropertyName} is required.")
+                .NotNull()
+                .GreaterThan(10).WithMessage("{PropertyName} must be greater than 10.");
 
         }
 

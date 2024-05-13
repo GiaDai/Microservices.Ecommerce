@@ -11,7 +11,9 @@ namespace Microservices.Ecommerce.Application.Interfaces
         Task<IReadOnlyList<T>> GetAllAsync();
         Task<IReadOnlyList<T>> GetPagedReponseAsync(int _start, int _end);
         Task<T> AddAsync(T entity);
+        Task<List<T>> AddRangeAsync(List<T> entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(T entity);
+        Task SaveChangesAsync();
     }
 }

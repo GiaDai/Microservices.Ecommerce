@@ -16,6 +16,7 @@ namespace Microservices.Ecommerce.Application.Features.Products.Commands.UpdateP
         public string Name { get; set; }
         public string Description { get; set; }
         public decimal Rate { get; set; }
+        public decimal Price { get; set; }
         public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Response<int>>
         {
             private readonly IProductRepositoryAsync _productRepository;
@@ -36,6 +37,7 @@ namespace Microservices.Ecommerce.Application.Features.Products.Commands.UpdateP
                     product.Name = command.Name;
                     product.Rate = command.Rate;
                     product.Description = command.Description;
+                    product.Price = command.Price;
                     await _productRepository.UpdateAsync(product);
                     return new Response<int>(product.Id);
                 }

@@ -6,7 +6,7 @@ import {
   CreateProduct,
   ShowProduct,
   EditProduct,
-  CreateProductRange,
+  CreateRangeProduct,
 } from "@pages/products"; // replace with your actual import path
 import { Unauthorized } from "@components/index";
 
@@ -69,7 +69,7 @@ export const ProductRoutes = () => {
             action="create-range"
             fallback={<Unauthorized />}
           >
-            <CreateProductRange />
+            <CreateRangeProduct />
           </CanAccess>
         }
       />

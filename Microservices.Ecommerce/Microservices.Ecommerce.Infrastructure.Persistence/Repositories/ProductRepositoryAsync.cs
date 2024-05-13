@@ -6,6 +6,7 @@ using Microservices.Ecommerce.Infrastructure.Persistence.Repository;
 using Microservices.Ecommerce.Infrastructure.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Microservices.Ecommerce.Infrastructure.Persistence.Repositories
@@ -17,6 +18,13 @@ namespace Microservices.Ecommerce.Infrastructure.Persistence.Repositories
         public ProductRepositoryAsync(ApplicationDbContext dbContext) : base(dbContext)
         {
             _products = dbContext.Set<Product>();
+        }
+
+        public async Task<int> DeleteRangeAsync(List<int> ids)
+        {
+            var products = await _products.Where(p => ids.Contains(p.Id)).ToListAsync();
+            _products.RemoveRange(products);
+            return products.Count;
         }
 
         public async Task<PagedList<Product>> GetProductPagedListAsync(int _start, int _end, string _order, string _sort, List<string>? _filter = null)

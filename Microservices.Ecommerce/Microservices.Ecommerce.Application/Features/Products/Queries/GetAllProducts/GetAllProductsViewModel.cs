@@ -1,4 +1,6 @@
-﻿namespace Microservices.Ecommerce.Application.Features.Products.Queries.GetAllProducts
+﻿using System;
+
+namespace Microservices.Ecommerce.Application.Features.Products.Queries.GetAllProducts
 {
     public class GetAllProductsViewModel
     {
@@ -8,5 +10,7 @@
         public string Description { get; set; }
         public decimal Rate { get; set; }
         public decimal Price { get; set; }
+        public string LastModifiedBy { get; set; }
+        public DateTime? LastModified { get; set; }
     }
 }

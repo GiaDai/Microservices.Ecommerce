@@ -25,7 +25,7 @@ import {
 } from "@refinedev/react-router-v6";
 import {
   CreateProduct,
-  CreateProductRange,
+  CreateRangeProduct,
   EditProduct,
   ListProduct,
   ListRole,
@@ -226,7 +226,7 @@ const App: React.FC = () => {
                         action="create-range"
                         fallback={<Unauthorized />}
                       >
-                        <CreateProductRange />
+                        <CreateRangeProduct />
                       </CanAccess>
                     }
                   />

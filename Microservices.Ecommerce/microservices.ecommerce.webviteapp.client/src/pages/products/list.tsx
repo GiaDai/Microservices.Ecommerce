@@ -8,75 +8,64 @@ import {
   DateField,
   FilterDropdown,
 } from "@refinedev/antd";
-import { Table, Space, Input, Form, Spin, Button } from "antd";
-import { Product } from "./types";
-import { getDefaultFilter, useNavigation, useCan } from "@refinedev/core";
+import { Table, Space, Input, Button } from "antd";
+import { IProduct } from "./types";
+import {
+  getDefaultFilter,
+  useNavigation,
+  useCan,
+  useDeleteMany,
+} from "@refinedev/core";
 import { PaginationTotal } from "@components/index";
-import debounce from "lodash/debounce";
-import { SearchOutlined, StarOutlined } from "@ant-design/icons";
+import React from "react";
 export const ListProduct = () => {
-  const { tableProps, searchFormProps, sorters, filters, tableQueryResult } =
-    useTable<Product>({
-      resource: "products",
-      pagination: { current: 1, pageSize: 10 },
-      sorters: { initial: [{ field: "Id", order: "asc" }] },
-    });
-
-  const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    searchFormProps?.onFinish?.({
-      name: e.target.value,
-    });
-  };
-  const debouncedOnChange = debounce(onSearch, 500);
-  const { create } = useNavigation();
+  const { mutate: deleteMutate } = useDeleteMany();
+  const { tableProps, sorters, filters } = useTable<IProduct>({
+    resource: "products",
+    pagination: { current: 1, pageSize: 10 },
+    sorters: { initial: [{ field: "Id", order: "asc" }] },
+  });
+  const [selectedRowKeys, setSelectedRowKeys] = React.useState<React.Key[]>([]);
+  React.useEffect(() => {
+    console.log(selectedRowKeys);
+  }, [selectedRowKeys]);
+  const { create, push } = useNavigation();
   const { data: canCreate } = useCan({
     resource: "products",
     action: "create",
   });
+
+  const handleDelete = () => {
+    const ids = selectedRowKeys.map((key) => key.toString());
+    deleteMutate({ resource: "products", ids });
+    setSelectedRowKeys([]);
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (selectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(selectedRowKeys);
+    },
+  };
+
   return (
     <List
-      title={
-        <Button
-          hidden={!canCreate?.can}
-          onClick={() => {
-            create("products");
-          }}
-          type="primary"
-          icon={
-            <StarOutlined
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            />
-          }
-        >
-          Create Product
-        </Button>
+      headerButtons={
+        canCreate ? (
+          <>
+            <Button onClick={() => create("products")}>Create</Button>
+            <Button onClick={() => push("/products/create-range")}>
+              Create range
+            </Button>
+            <Button
+              disabled={selectedRowKeys.length === 0}
+              onClick={() => handleDelete()}
+            >
+              Delete range {selectedRowKeys.length}
+            </Button>
+          </>
+        ) : null
       }
-      headerButtons={() => {
-        return (
-          <Space>
-            <Form {...searchFormProps} layout="inline">
-              <Form.Item name="name" noStyle>
-                <Input
-                  size="large"
-                  prefix={
-                    <SearchOutlined
-                      className="anticon tertiary"
-                      onPointerEnterCapture={undefined}
-                      onPointerLeaveCapture={undefined}
-                    />
-                  }
-                  suffix={
-                    <Spin size="small" spinning={tableQueryResult.isFetching} />
-                  }
-                  placeholder="Search by name"
-                  onChange={debouncedOnChange}
-                />
-              </Form.Item>
-            </Form>
-          </Space>
-        );
-      }}
     >
       <Table
         {...tableProps}
@@ -87,6 +76,7 @@ export const ListProduct = () => {
             <PaginationTotal total={total} entityName="products" />
           ),
         }}
+        rowSelection={rowSelection}
       >
         <Table.Column
           dataIndex="Id"
@@ -158,7 +148,7 @@ export const ListProduct = () => {
         />
         <Table.Column
           title="Actions"
-          render={(_, record: Product) => (
+          render={(_, record: IProduct) => (
             <Space>
               {/* We'll use the `EditButton` and `ShowButton` to manage navigation easily */}
               <ShowButton
