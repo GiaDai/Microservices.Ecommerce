@@ -2,11 +2,7 @@
 using Microservices.Ecommerce.Domain.Common;
 using Microservices.Ecommerce.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,11 +28,11 @@ namespace Microservices.Ecommerce.Infrastructure.Persistence.Contexts
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.Created = _dateTime.NowUtc;
+                        entry.Entity.Created = _dateTime.Now;
                         entry.Entity.CreatedBy = _authenticatedUser.UserId;
                         break;
                     case EntityState.Modified:
-                        entry.Entity.LastModified = _dateTime.NowUtc;
+                        entry.Entity.LastModified = _dateTime.Now;
                         entry.Entity.LastModifiedBy = _authenticatedUser.UserId;
                         break;
                 }

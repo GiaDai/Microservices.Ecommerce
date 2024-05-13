@@ -44,6 +44,13 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries
                         .ToListAsync();
                     return new Response<object>(true, userIds, message: "Success");
                 }
+                if (request.id != null && request.id.Count == 0)
+                {
+                    var userIds = await _context.Users
+                        .AsNoTracking()
+                        .ToListAsync();
+                    return new Response<object>(true, userIds, message: "Success");
+                }
                 var userQuery = _context.Users
                     .Join(_context.UserRoles,
                         user => user.Id,

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -41,7 +42,7 @@ namespace Microservices.Ecommerce.Infrastructure.Shared.Extensions
                 var entityType = typeof(T);
                 var propertyInfo = entityType.GetProperty(filterKey);
                 var propertyType = propertyInfo?.PropertyType;
-
+                
                 if (propertyType != null)
                 {
                     if (propertyType == typeof(int) || propertyType == typeof(decimal) || propertyType == typeof(double)) // Add other numeric types if needed
@@ -53,12 +54,20 @@ namespace Microservices.Ecommerce.Infrastructure.Shared.Extensions
                         }
                     }
                     // datetime
-                    else if (propertyType == typeof(DateTime))
+                    else if (propertyType == typeof(DateTime?) || propertyType == typeof(DateTime))
                     {
-                        DateTime dateFilterValue;
-                        if (DateTime.TryParse(filterValue, out dateFilterValue))
+                        string[] dateRange = filterValue.Split('#');
+                        if (dateRange.Length != 2)
                         {
-                            query = query.Where(p => EF.Property<DateTime>(p, filterKey) == dateFilterValue);
+                            continue;
+                        }
+                        DateTime startDate;
+                        DateTime endDate;
+                        
+                        if (DateTime.TryParseExact(dateRange[0],"yyyy-M-d",CultureInfo.CurrentCulture, DateTimeStyles.None, out startDate) 
+                        && DateTime.TryParseExact(dateRange[1],"yyyy-M-d",CultureInfo.CurrentCulture, DateTimeStyles.None, out endDate))
+                        {
+                            query = query.Where(p => EF.Property<DateTime>(p, filterKey) >= startDate && EF.Property<DateTime>(p, filterKey) <= endDate);
                         }
                     }
                     else if (propertyType == typeof(string))

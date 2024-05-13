@@ -7,8 +7,9 @@ import {
   getDefaultSortOrder,
   DateField,
   FilterDropdown,
+  useSelect,
 } from "@refinedev/antd";
-import { Table, Space, Input, Button } from "antd";
+import { Table, Space, Input, Button, DatePicker, Select } from "antd";
 import { IProduct } from "./types";
 import {
   getDefaultFilter,
@@ -27,11 +28,25 @@ export const ListProduct = () => {
     pagination: { current: 1, pageSize: 10 },
     sorters: { initial: [{ field: "Id", order: "desc" }] },
   });
-  const { data: users, isLoading } = useMany<IUserShort>({
+  const { data: usersCreateBy, isLoading: isLoadingCreateBy } = useMany<IUserShort>({
     resource: "users",
     ids:
       [...new Set(tableProps?.dataSource?.map((user) => user.CreatedBy))] ?? [],
   });
+
+  const { data: usersModifiedBy, isLoading: isLoadingModifiedBy } = useMany<IUserShort>({
+    resource: "users",
+    ids:
+      [...new Set(tableProps?.dataSource?.map((user) => user.LastModifiedBy))] ?? [],
+  });
+
+  const { selectProps } = useSelect({
+    resource: "users",
+    optionLabel: "UserName",
+    optionValue: "Id",
+    defaultValue: getDefaultFilter("CreatedBy", filters, "eq"),
+  });
+
   const [selectedRowKeys, setSelectedRowKeys] = React.useState<React.Key[]>([]);
   const { create, push } = useNavigation();
   const { data: canCreate } = useCan({
@@ -141,24 +156,32 @@ export const ListProduct = () => {
           dataIndex="CreatedBy"
           title="Created By"
           render={(value) => {
-            if (isLoading) {
+            if (isLoadingCreateBy) {
               return "Loading...";
             }
             return (
-              users?.data?.find((role) => role.Id == value)?.UserName ??
+              usersCreateBy?.data?.find((role) => role.Id == value)?.UserName ??
               "Not Found"
             );
           }}
+          filterDropdown={(props) => (
+            <FilterDropdown
+              {...props}
+              mapValue={(selectedKey) => String(selectedKey)}
+            >
+              <Select style={{ minWidth: 200 }} {...selectProps} />
+            </FilterDropdown>
+          )}
         />
         <Table.Column
           dataIndex="LastModifiedBy"
           title="Last Modified By"
           render={(value) => {
-            if (isLoading) {
+            if (isLoadingModifiedBy) {
               return "Loading...";
             }
             return (
-              users?.data?.find((role) => role.Id == value)?.UserName ?? "-"
+              usersModifiedBy?.data?.find((role) => role.Id == value)?.UserName ?? "-"
             );
           }}
         />
@@ -169,11 +192,35 @@ export const ListProduct = () => {
             if (!value) return "-";
             return <DateField format="LLL" value={value} />;
           }}
+          defaultFilteredValue={getDefaultFilter(
+            "LastModified",
+            filters,
+            "between",
+          )}
+          filterDropdown={(props) => (
+            <FilterDropdown {...props}>
+              <DatePicker.RangePicker />
+            </FilterDropdown>
+          )}
+          sorter
+          defaultSortOrder={getDefaultSortOrder("LastModified", sorters)}
         />
         <Table.Column
           dataIndex="Created"
           title="Created At"
           render={(value) => <DateField format="LLL" value={value} />}
+          defaultFilteredValue={getDefaultFilter(
+            "Created",
+            filters,
+            "between",
+          )}
+          filterDropdown={(props) => (
+            <FilterDropdown {...props}>
+              <DatePicker.RangePicker />
+            </FilterDropdown>
+          )}
+          sorter
+          defaultSortOrder={getDefaultSortOrder("Created", sorters)}
         />
         <Table.Column
           title="Actions"

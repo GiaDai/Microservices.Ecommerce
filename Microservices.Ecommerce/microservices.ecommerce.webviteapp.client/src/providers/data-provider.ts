@@ -43,10 +43,20 @@ export const dataProvider: DataProvider = {
 
     if (filters && filters.length > 0) {
       filters.forEach((filter) => {
+        
         if ("field" in filter && filter.operator === "eq") {
           // Our fake API supports "eq" operator by simply appending the field name and value to the query string.
           // params.append(filter.field, filter.value);
           params.append("_filter", `${filter.field}:${filter.value}`);
+        }
+        if("field" in filter && filter.operator === "in") {
+          const start = filter.value[0];
+          const end = filter.value[1];
+          if (start && end) {
+            const startDate = `${start.$y}-${start.$M + 1}-${start.$D}`;
+            const endDate = `${end.$y}-${end.$M + 1}-${end.$D}`;
+            params.append("_filter", `${filter.field}:${startDate}#${endDate}`);
+          }
         }
       });
     }
