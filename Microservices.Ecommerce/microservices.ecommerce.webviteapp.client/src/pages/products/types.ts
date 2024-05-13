@@ -5,8 +5,8 @@ export interface IProduct {
   Rate: number;
   Price: number;
   Id: number;
-  CreatedBy: any;
+  CreatedBy: string;
   Created: string;
-  LastModifiedBy: any;
-  LastModified: any;
+  LastModifiedBy: string;
+  LastModified: string;
 }

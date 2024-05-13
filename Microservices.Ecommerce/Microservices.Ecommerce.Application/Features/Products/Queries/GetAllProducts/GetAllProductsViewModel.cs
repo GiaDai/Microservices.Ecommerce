@@ -12,5 +12,7 @@ namespace Microservices.Ecommerce.Application.Features.Products.Queries.GetAllPr
         public decimal Price { get; set; }
         public string LastModifiedBy { get; set; }
         public DateTime? LastModified { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime Created { get; set; }
     }
 }

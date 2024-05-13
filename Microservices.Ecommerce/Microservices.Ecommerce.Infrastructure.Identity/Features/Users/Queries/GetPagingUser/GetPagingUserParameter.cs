@@ -7,5 +7,6 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries
 {
     public class GetPagingUserParameter : RequestParameter
     {
+        public List<string> id { get; set; }
     }
 }

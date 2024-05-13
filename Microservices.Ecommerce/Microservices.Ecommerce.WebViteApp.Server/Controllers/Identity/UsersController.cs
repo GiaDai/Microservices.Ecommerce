@@ -25,6 +25,7 @@ namespace Microservices.Ecommerce.WebViteApp.Server.Controllers.Identity
         {
             return Ok(await Mediator.Send(new GetPagingUserQuery()
             {
+                id = filter.id,
                 _end = filter._end,
                 _start = filter._start,
                 _order = filter._order,

@@ -15,15 +15,22 @@ import {
   useNavigation,
   useCan,
   useDeleteMany,
+  useMany,
 } from "@refinedev/core";
 import { PaginationTotal } from "@components/index";
 import React from "react";
+import { IUserShort } from "..";
 export const ListProduct = () => {
   const { mutate: deleteMutate } = useDeleteMany();
   const { tableProps, sorters, filters } = useTable<IProduct>({
     resource: "products",
     pagination: { current: 1, pageSize: 10 },
-    sorters: { initial: [{ field: "Id", order: "asc" }] },
+    sorters: { initial: [{ field: "Id", order: "desc" }] },
+  });
+  const { data: users, isLoading } = useMany<IUserShort>({
+    resource: "users",
+    ids:
+      [...new Set(tableProps?.dataSource?.map((user) => user.CreatedBy))] ?? [],
   });
   const [selectedRowKeys, setSelectedRowKeys] = React.useState<React.Key[]>([]);
   React.useEffect(() => {
@@ -132,6 +139,31 @@ export const ListProduct = () => {
               <Input placeholder="Search Price" />
             </FilterDropdown>
           )}
+        />
+        <Table.Column
+          dataIndex="CreatedBy"
+          title="Created By"
+          render={(value) => {
+            if (isLoading) {
+              return "Loading...";
+            }
+            return (
+              users?.data?.find((role) => role.Id == value)?.UserName ??
+              "Not Found"
+            );
+          }}
+        />
+        <Table.Column
+          dataIndex="LastModifiedBy"
+          title="Last Modified By"
+          render={(value) => {
+            if (isLoading) {
+              return "Loading...";
+            }
+            return (
+              users?.data?.find((role) => role.Id == value)?.UserName ?? "-"
+            );
+          }}
         />
         <Table.Column
           dataIndex="LastModified"

@@ -17,6 +17,7 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries
 {
     public class GetPagingUserQuery : IRequest<Response<object>>
     {
+        public List<string> id { get; set; }
         public int _start { get; set; }
         public int _end { get; set; }
         public string _sort { get; set; }
@@ -35,6 +36,14 @@ namespace Microservices.Ecommerce.Infrastructure.Identity.Features.Users.Queries
 
             public async Task<Response<object>> Handle(GetPagingUserQuery request, CancellationToken cancellationToken)
             {
+                if (request.id != null && request.id.Count > 0)
+                {
+                    var userIds = await _context.Users
+                        .AsNoTracking()
+                        .Where(x => request.id.Contains(x.Id))
+                        .ToListAsync();
+                    return new Response<object>(true, userIds, message: "Success");
+                }
                 var userQuery = _context.Users
                     .Join(_context.UserRoles,
                         user => user.Id,
