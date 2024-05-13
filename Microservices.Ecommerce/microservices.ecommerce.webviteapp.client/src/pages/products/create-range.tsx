@@ -98,7 +98,24 @@ export const CreateRangeProduct: React.FC = () => {
   ];
 
   return (
-    <Create title="Create range products" breadcrumb={<Breadcrumb />}>
+    <Create
+      title="Create range products"
+      breadcrumb={
+        <Breadcrumb
+          breadcrumbProps={{
+            items: [
+              {
+                title: "Products",
+                href: "/products",
+              },
+              {
+                title: "Create range",
+              },
+            ],
+          }}
+        />
+      }
+    >
       <Space style={{ marginBottom: 16 }}>
         <ImportButton {...importProps} accept=".csv" />
         <span>

@@ -33,9 +33,6 @@ export const ListProduct = () => {
       [...new Set(tableProps?.dataSource?.map((user) => user.CreatedBy))] ?? [],
   });
   const [selectedRowKeys, setSelectedRowKeys] = React.useState<React.Key[]>([]);
-  React.useEffect(() => {
-    console.log(selectedRowKeys);
-  }, [selectedRowKeys]);
   const { create, push } = useNavigation();
   const { data: canCreate } = useCan({
     resource: "products",
