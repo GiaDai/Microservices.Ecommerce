@@ -39,6 +39,7 @@ import {
   CloneUser,
   CreateUser,
   ListUser,
+  CloneProduct,
 } from "./pages";
 import {
   CloneRoleClaim,
@@ -73,6 +74,7 @@ const App: React.FC = () => {
                 name: "products",
                 list: "/products",
                 create: "/products/create",
+                clone: "/products/:id/clone",
                 edit: "/products/:id/edit",
                 show: "/products/:id",
               },
@@ -191,6 +193,18 @@ const App: React.FC = () => {
                         fallback={<Unauthorized />}
                       >
                         <CreateProduct />
+                      </CanAccess>
+                    }
+                  />
+                  <Route
+                    path=":id/clone"
+                    element={
+                      <CanAccess
+                        resource="products"
+                        action="clone"
+                        fallback={<Unauthorized />}
+                      >
+                        <CloneProduct />
                       </CanAccess>
                     }
                   />

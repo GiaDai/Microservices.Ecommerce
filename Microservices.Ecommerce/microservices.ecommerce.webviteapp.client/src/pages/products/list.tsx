@@ -8,6 +8,8 @@ import {
   DateField,
   FilterDropdown,
   useSelect,
+  CloneButton,
+  ExportButton,
 } from "@refinedev/antd";
 import { Table, Space, Input, Button, DatePicker, Select } from "antd";
 import { IProduct } from "./types";
@@ -17,6 +19,7 @@ import {
   useCan,
   useDeleteMany,
   useMany,
+  useExport,
 } from "@refinedev/core";
 import { PaginationTotal } from "@components/index";
 import React from "react";
@@ -31,14 +34,16 @@ export const ListProduct = () => {
   const { data: usersCreateBy, isLoading: isLoadingCreateBy } = useMany<IUserShort>({
     resource: "users",
     ids:
-      [...new Set(tableProps?.dataSource?.map((user) => user.CreatedBy))] ?? [],
+      [...new Set(tableProps?.dataSource?.map((user) => user.CreatedBy))],
   });
 
   const { data: usersModifiedBy, isLoading: isLoadingModifiedBy } = useMany<IUserShort>({
     resource: "users",
     ids:
-      [...new Set(tableProps?.dataSource?.map((user) => user.LastModifiedBy))] ?? [],
+      [...new Set(tableProps?.dataSource?.map((user) => user.LastModifiedBy))],
   });
+
+  const { triggerExport, isLoading: exportLoading } = useExport<IProduct>({ filters });
 
   const { selectProps } = useSelect({
     resource: "users",
@@ -82,6 +87,7 @@ export const ListProduct = () => {
             >
               Delete range {selectedRowKeys.length}
             </Button>
+            <ExportButton onClick={triggerExport} loading={exportLoading} />
           </>
         ) : null
       }
@@ -245,6 +251,7 @@ export const ListProduct = () => {
                 recordItemId={record.Id}
                 accessControl={{ enabled: true, hideIfUnauthorized: true }}
               />
+              <CloneButton hideText size="small" recordItemId={record.Id} accessControl={{ enabled: true, hideIfUnauthorized: true }} />
             </Space>
           )}
         />
