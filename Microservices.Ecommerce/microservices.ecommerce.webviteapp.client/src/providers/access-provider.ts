@@ -32,4 +32,10 @@ export const accessControlProvider: AccessControlProvider = {
       reason: "Unauthorized",
     };
   },
+  options: {
+    buttons: {
+      enableAccessControl: true,
+      hideIfUnauthorized: true,
+    },
+  },
 };

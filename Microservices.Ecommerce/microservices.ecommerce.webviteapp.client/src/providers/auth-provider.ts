@@ -24,7 +24,18 @@ export const authProvider: AuthProvider = {
     // Now let's check if the token exists in the local storage.
     // In the later steps, we'll be implementing the `login` and `logout` methods.
     const token = localStorage.getItem("access_token");
-    return { authenticated: Boolean(token) };
+    if (Boolean(token)) {
+      return { authenticated: true };
+    }
+    return {
+      authenticated: false,
+      error: {
+        message: "Check failed",
+        name: "Not authenticated",
+      },
+      logout: true,
+      redirectTo: "/login",
+    };
   },
   getIdentity: async () => {
     const response = await fetch("/api/account/me", {

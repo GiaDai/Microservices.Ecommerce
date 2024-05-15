@@ -1,8 +1,16 @@
 import { DataProvider as BaseDataProvider, HttpError } from "@refinedev/core";
 import { ResponseManyRoot, ResponseRoot } from "./types";
-import { authProvider } from "./auth-provider";
 
 const API_URL = "/api";
+
+const processErrorResponse = async (response: Response): Promise<never> => {
+  const errorResponse = (await response.json()) as ResponseRoot;
+  const error: HttpError = {
+    message: errorResponse.Message,
+    statusCode: errorResponse.Code,
+  };
+  return Promise.reject(error);
+};
 
 const fetcher = async (url: string, options?: RequestInit) => {
   return fetch(url, {
@@ -43,13 +51,12 @@ export const dataProvider: DataProvider = {
 
     if (filters && filters.length > 0) {
       filters.forEach((filter) => {
-        
         if ("field" in filter && filter.operator === "eq") {
           // Our fake API supports "eq" operator by simply appending the field name and value to the query string.
           // params.append(filter.field, filter.value);
           params.append("_filter", `${filter.field}:${filter.value}`);
         }
-        if("field" in filter && filter.operator === "in") {
+        if ("field" in filter && filter.operator === "in") {
           const start = filter.value[0];
           const end = filter.value[1];
           if (start && end) {
@@ -66,44 +73,39 @@ export const dataProvider: DataProvider = {
     );
 
     if (response.status === 401) {
-      await authProvider.refresh();
+      // await authProvider.refresh();
+      return processErrorResponse(response);
+    }
+
+    if (!response.ok) {
+      return processErrorResponse(response);
+    }
+
+    const data = (await response.json()) as ResponseRoot;
+    if (!data.Succeeded) {
       const error: HttpError = {
-        message: response.statusText,
-        statusCode: response.status,
-      };
-      return Promise.reject(error);
-    } else if (response.ok) {
-      const data = (await response.json()) as ResponseRoot;
-      if (!data.Succeeded) {
-        const error: HttpError = {
-          message: data.Message,
-          statusCode: data.Code,
-        };
-        return Promise.reject(error);
-      }
-      const total = data.Data._total;
-      return {
-        data: data.Data._data,
-        total,
-      };
-    } else {
-      const errorResponse = (await response.json()) as ResponseRoot;
-      const error: HttpError = {
-        message: errorResponse.Message,
-        statusCode: errorResponse.Code,
+        message: data.Message,
+        statusCode: data.Code,
       };
       return Promise.reject(error);
     }
+
+    const total = data.Data._total;
+    return {
+      data: data.Data._data,
+      total,
+    };
   },
   getOne: async ({ resource, id }) => {
     const response = await fetcher(`${API_URL}/${resource}/show/${id}`);
+
+    if (response.status === 401) {
+      // await authProvider.refresh();
+      return processErrorResponse(response);
+    }
+
     if (!response.ok) {
-      const errorResponse = (await response.json()) as ResponseRoot;
-      const error: HttpError = {
-        message: errorResponse.Message,
-        statusCode: errorResponse.Code,
-      };
-      return Promise.reject(error);
+      return processErrorResponse(response);
     }
     const data = (await response.json()) as ResponseRoot;
     return { data: data.Data as any };
@@ -115,13 +117,14 @@ export const dataProvider: DataProvider = {
       const response = await fetcher(
         `${API_URL}/${resource}?${params.toString()}`
       );
+
+      if (response.status === 401) {
+        // await authProvider.refresh();
+        return processErrorResponse(response);
+      }
+
       if (!response.ok) {
-        const errorResponse = (await response.json()) as ResponseManyRoot;
-        const error: HttpError = {
-          message: errorResponse.Message,
-          statusCode: errorResponse.Code,
-        };
-        return Promise.reject(error);
+        return processErrorResponse(response);
       } else {
         const data = (await response.json()) as ResponseManyRoot;
         return { data: data.Data as any[] };
@@ -137,6 +140,12 @@ export const dataProvider: DataProvider = {
         "Content-Type": "application/json",
       },
     });
+
+    if (response.status === 401) {
+      // await authProvider.refresh();
+      return processErrorResponse(response);
+    }
+
     if (!response.ok) {
       const errorResponse = (await response.json()) as ResponseRoot;
       const error: HttpError = {
@@ -159,6 +168,12 @@ export const dataProvider: DataProvider = {
         "Content-Type": "application/json",
       },
     });
+
+    if (response.status === 401) {
+      // await authProvider.refresh();
+      return processErrorResponse(response);
+    }
+
     if (!response.ok) {
       const errorResponse = (await response.json()) as ResponseManyRoot;
       const error: HttpError = {
@@ -178,6 +193,12 @@ export const dataProvider: DataProvider = {
         "Content-Type": "application/json",
       },
     });
+
+    if (response.status === 401) {
+      // await authProvider.refresh();
+      return processErrorResponse(response);
+    }
+
     if (!response.ok) {
       const errorResponse = (await response.json()) as ResponseRoot;
       const error: HttpError = {
@@ -193,6 +214,12 @@ export const dataProvider: DataProvider = {
     const response = await fetcher(`${API_URL}/${resource}/${id}`, {
       method: "DELETE",
     });
+
+    if (response.status === 401) {
+      // await authProvider.refresh();
+      return processErrorResponse(response);
+    }
+
     if (!response.ok) {
       const errorResponse = (await response.json()) as ResponseRoot;
       const error: HttpError = {
@@ -212,6 +239,12 @@ export const dataProvider: DataProvider = {
         "Content-Type": "application/json",
       },
     });
+
+    if (response.status === 401) {
+      // await authProvider.refresh();
+      return processErrorResponse(response);
+    }
+
     if (!response.ok) {
       const errorResponse = (await response.json()) as ResponseRoot;
       const error: HttpError = {

@@ -15,10 +15,11 @@ import routerProvider from "@refinedev/react-router-v6";
 import {
   dataProvider,
   authProvider,
+  accessControlProvider,
   // accessControlProvider,
 } from "@providers/index";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
-import { Header, Unauthorized } from "@components/index";
+import { AuthenticatedPage, Header, Unauthorized } from "@components/index";
 import {
   CatchAllNavigate,
   NavigateToResource,
@@ -59,7 +60,7 @@ const App: React.FC = () => {
             dataProvider={dataProvider}
             authProvider={authProvider}
             routerProvider={routerProvider}
-            // accessControlProvider={accessControlProvider}
+            accessControlProvider={accessControlProvider}
             notificationProvider={useNotificationProvider}
             options={{
               syncWithLocation: true,

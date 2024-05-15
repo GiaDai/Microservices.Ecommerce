@@ -20,6 +20,7 @@ import {
   useDeleteMany,
   useMany,
   useExport,
+  CanAccess,
 } from "@refinedev/core";
 import { PaginationTotal } from "@components/index";
 import React from "react";
@@ -31,19 +32,23 @@ export const ListProduct = () => {
     pagination: { current: 1, pageSize: 10 },
     sorters: { initial: [{ field: "Id", order: "desc" }] },
   });
-  const { data: usersCreateBy, isLoading: isLoadingCreateBy } = useMany<IUserShort>({
-    resource: "users",
-    ids:
-      [...new Set(tableProps?.dataSource?.map((user) => user.CreatedBy))],
-  });
+  const { data: usersCreateBy, isLoading: isLoadingCreateBy } =
+    useMany<IUserShort>({
+      resource: "users",
+      ids: [...new Set(tableProps?.dataSource?.map((user) => user.CreatedBy))],
+    });
 
-  const { data: usersModifiedBy, isLoading: isLoadingModifiedBy } = useMany<IUserShort>({
-    resource: "users",
-    ids:
-      [...new Set(tableProps?.dataSource?.map((user) => user.LastModifiedBy))],
-  });
+  const { data: usersModifiedBy, isLoading: isLoadingModifiedBy } =
+    useMany<IUserShort>({
+      resource: "users",
+      ids: [
+        ...new Set(tableProps?.dataSource?.map((user) => user.LastModifiedBy)),
+      ],
+    });
 
-  const { triggerExport, isLoading: exportLoading } = useExport<IProduct>({ filters });
+  const { triggerExport, isLoading: exportLoading } = useExport<IProduct>({
+    filters,
+  });
 
   const { selectProps } = useSelect({
     resource: "users",
@@ -54,10 +59,10 @@ export const ListProduct = () => {
 
   const [selectedRowKeys, setSelectedRowKeys] = React.useState<React.Key[]>([]);
   const { create, push } = useNavigation();
-  const { data: canCreate } = useCan({
-    resource: "products",
-    action: "create",
-  });
+  // const { data: canCreate } = useCan({
+  //   resource: "products",
+  //   action: "create",
+  // });
 
   const handleDelete = () => {
     const ids = selectedRowKeys.map((key) => key.toString());
@@ -75,21 +80,29 @@ export const ListProduct = () => {
   return (
     <List
       headerButtons={
-        canCreate ? (
-          <>
+        <>
+          <CanAccess resource="products" action="create">
             <Button onClick={() => create("products")}>Create</Button>
+          </CanAccess>
+          <CanAccess resource="products" action="create-range">
             <Button onClick={() => push("/products/create-range")}>
               Create range
             </Button>
+          </CanAccess>
+
+          <CanAccess resource="products" action="delete-range">
             <Button
               disabled={selectedRowKeys.length === 0}
               onClick={() => handleDelete()}
             >
               Delete range {selectedRowKeys.length}
             </Button>
+          </CanAccess>
+
+          <CanAccess resource="products" action="export">
             <ExportButton onClick={triggerExport} loading={exportLoading} />
-          </>
-        ) : null
+          </CanAccess>
+        </>
       }
     >
       <Table
@@ -187,7 +200,8 @@ export const ListProduct = () => {
               return "Loading...";
             }
             return (
-              usersModifiedBy?.data?.find((role) => role.Id == value)?.UserName ?? "-"
+              usersModifiedBy?.data?.find((role) => role.Id == value)
+                ?.UserName ?? "-"
             );
           }}
         />
@@ -201,7 +215,7 @@ export const ListProduct = () => {
           defaultFilteredValue={getDefaultFilter(
             "LastModified",
             filters,
-            "between",
+            "between"
           )}
           filterDropdown={(props) => (
             <FilterDropdown {...props}>
@@ -215,11 +229,7 @@ export const ListProduct = () => {
           dataIndex="Created"
           title="Created At"
           render={(value) => <DateField format="LLL" value={value} />}
-          defaultFilteredValue={getDefaultFilter(
-            "Created",
-            filters,
-            "between",
-          )}
+          defaultFilteredValue={getDefaultFilter("Created", filters, "between")}
           filterDropdown={(props) => (
             <FilterDropdown {...props}>
               <DatePicker.RangePicker />
@@ -233,25 +243,12 @@ export const ListProduct = () => {
           render={(_, record: IProduct) => (
             <Space>
               {/* We'll use the `EditButton` and `ShowButton` to manage navigation easily */}
-              <ShowButton
-                hideText
-                size="small"
-                recordItemId={record.Id}
-                accessControl={{ enabled: true, hideIfUnauthorized: true }}
-              />
-              <EditButton
-                hideText
-                size="small"
-                recordItemId={record.Id}
-                accessControl={{ enabled: true, hideIfUnauthorized: false }}
-              />
-              <DeleteButton
-                hideText
-                size="small"
-                recordItemId={record.Id}
-                accessControl={{ enabled: true, hideIfUnauthorized: true }}
-              />
-              <CloneButton hideText size="small" recordItemId={record.Id} accessControl={{ enabled: true, hideIfUnauthorized: true }} />
+              <ShowButton hideText size="small" recordItemId={record.Id} />
+              <EditButton hideText size="small" recordItemId={record.Id} />
+              <DeleteButton hideText size="small" recordItemId={record.Id} />
+              <CanAccess resource="products" action="clone">
+                <CloneButton hideText size="small" recordItemId={record.Id} />
+              </CanAccess>
             </Space>
           )}
         />
